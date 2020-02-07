@@ -46,7 +46,7 @@ add_filter(
 	'oembed_result',
 	function ( $html, $url, $attr ) {
 		if ( preg_match( '#youtu#i', $url ) ) {
-			preg_match( '#watch\?v=([0-9a-z]+)#i', $url, $matchs );
+			preg_match( '#watch\?v=([0-9a-z\-\_]+)#i', $url, $matchs );
 
 			if ( ! empty( $matchs[1] ) ) {
 				$video_id = $matchs[1];
