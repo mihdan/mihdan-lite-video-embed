@@ -39,12 +39,49 @@ add_action(
 	}
 );
 
+add_action(
+	'admin_enqueue_scripts',
+	function () {
+		wp_enqueue_script(
+			MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
+			MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/js/lite-yt-embed.js',
+			[],
+			filemtime( MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/frontend/js/lite-yt-embed.js' ),
+			true
+		);
+	}
+);
+
+add_action(
+	'after_setup_theme',
+	function () {
+		// Add support for editor styles.
+		add_theme_support( 'editor-styles' );
+
+		// Enqueue editor styles.
+		//add_editor_style( MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/css/lite-yt-embed.css' );
+	}
+);
+
+add_action(
+	'enqueue_block_editor_assets',
+	function () {
+		wp_enqueue_style(
+			MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
+			MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/css/lite-yt-embed.css',
+			array( 'wp-edit-blocks' ),
+			time()
+		);
+	}
+);
+
 /**
  * @link https://www.youtube.com/watch?v=6VLL9Txw6c4
  */
 add_filter(
-	'oembed_result',
-	function ( $html, $url, $attr ) {
+	'pre_oembed_result',
+	function ( $null, $url, $attr ) {
+
 		if ( preg_match( '#youtu#i', $url ) ) {
 			preg_match( '#watch\?v=([0-9a-z\-\_]+)#i', $url, $matchs );
 
@@ -59,7 +96,7 @@ add_filter(
 			}
 		}
 
-		return $html;
+		return $null;
 	},
 	10,
 	3
