@@ -88,9 +88,34 @@ add_filter(
 			if ( ! empty( $matchs[1] ) ) {
 				$video_id = $matchs[1];
 
-				$result  = '<lite-youtube videoid="' . $video_id . '" style="background-image: url(\'https://i.ytimg.com/vi/' . $video_id . '/hqdefault.jpg\');">';
-				$result .= '<div class="lty-playbtn"></div>';
-				$result .= '</lite-youtube>';
+				$result = '';
+
+				$result .= '<lite-youtube-container itemprop="video" itemscope="" itemtype="https://schema.org/VideoObject">';
+					$result .= '<lite-youtube videoid="%1$s" style="background-image: url(https://i.ytimg.com/vi/%1$s/hqdefault.jpg);">';
+						$result .= '<div class="lty-playbtn"></div>';
+					$result .= '</lite-youtube>';
+					$result .= '<meta itemprop="description" content="%3$s">';
+					$result .= '<meta itemprop="duration" content="T6M34S">';
+					$result .= '<link itemprop="url" href="%2$s">';
+					$result .= '<link itemprop="thumbnailUrl" href="https://i.ytimg.com/vi/%1$s/hqdefault.jpg">';
+					$result .= '<meta itemprop="name" content="%4$s">';
+					$result .= '<meta itemprop="uploadDate" content="%5$s">';
+					$result .= '<meta itemprop="isFamilyFriendly" content="true">';
+					$result .= '<span itemprop="thumbnail" itemscope="" itemtype="http://schema.org/ImageObject">';
+						$result .= '<meta itemprop="contentUrl" content="https://i.ytimg.com/vi/%1$s/hqdefault.jpg">';
+						$result .= '<meta itemprop="width" content="640">';
+						$result .= '<meta itemprop="height" content="360">';
+					$result .= '</span>';
+				$result .= '</lite-youtubecontainer>';
+
+				$result = sprintf(
+					$result,
+					$video_id,
+					$url,
+					'description',
+					'name',
+					'2020-06-12'
+				);
 
 				return $result;
 			}
