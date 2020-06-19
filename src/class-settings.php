@@ -39,6 +39,17 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_general',
 			array(
+				'id'          => 'api_key',
+				'type'        => 'text',
+				'name'        => __( 'API Key', 'mihdan-lite-youtube-embed' ),
+				'placeholder' => 'AIzaSyDe12JAR7DaIzUSGFIfiMuPPIOf1YMaKr4',
+				'desc'        => __( 'Plugin uses YouTube\'s API to fetch information on each video. <br />For your site to use that API, you will have to <a href="https://console.developers.google.com/project/" target="_blank">register</a> your site as a new application, <br />enable the YouTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
 				'id'      => 'use_microdata',
 				'type'    => 'select',
 				'name'    => __( 'Use Microdata', 'mihdan-lite-youtube-embed' ),
@@ -47,6 +58,37 @@ class Settings {
 					'no'  => __( 'No', 'mihdan-lite-youtube-embed' ),
 				),
 				'default' => 'yes',
+				'desc'    => __( 'Add schema.org markup for video', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
+				'id'      => 'use_lazy_load',
+				'type'    => 'select',
+				'name'    => __( 'Use Lazy Load', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					'yes' => __( 'Yes', 'mihdan-lite-youtube-embed' ),
+					'no'  => __( 'No', 'mihdan-lite-youtube-embed' ),
+				),
+				'default' => 'yes',
+				'desc'    => __( 'Add <code>loading="lazy"</code> attribute for preview', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
+				'id'      => 'use_async_load',
+				'type'    => 'select',
+				'name'    => __( 'Use Async Load', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					'yes' => __( 'Yes', 'mihdan-lite-youtube-embed' ),
+					'no'  => __( 'No', 'mihdan-lite-youtube-embed' ),
+				),
+				'default' => 'yes',
+				'desc'    => __( 'Add <code>decoding="async"</code> attribute for preview', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
@@ -63,6 +105,27 @@ class Settings {
 					'maxresdefault' => __( 'Maximum Resolution', 'mihdan-lite-youtube-embed' ),
 				),
 				'default' => 'sddefault',
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
+				'id'      => 'player_size',
+				'type'    => 'radio',
+				'name'    => __( 'Player Size', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					'420X236'  => __( '420X236 (Mini 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'560X315'  => __( '560X315 (Smaller 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'640X360'  => __( '640X360 (YouTube default for 16:9-ratio video)', 'mihdan-lite-youtube-embed' ),
+					'853X480'  => __( '853X480 (Larger 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'1280X720' => __( '1280X720 (Maxi 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'420X315'  => __( '420X315 (Smaller 4:3 player)', 'mihdan-lite-youtube-embed' ),
+					'480X360'  => __( '480X360 (Standard value, YouTube default for 4:3-ratio video)', 'mihdan-lite-youtube-embed' ),
+					'640X480'  => __( '640X480 (Larger 4:3 player)', 'mihdan-lite-youtube-embed' ),
+					'960X720'  => __( '960X720 (Maxi 4:3 player)', 'mihdan-lite-youtube-embed' ),
+				),
+				'default' => '480X360',
 			)
 		);
 
