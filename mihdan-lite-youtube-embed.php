@@ -6,6 +6,7 @@
  * Author: Mikhail Kobzarev
  * Author URI: https://www.kobzarev.com/
  * Plugin URI: https://www.kobzarev.com/
+ * GitHub Plugin URI: https://github.com/mihdan/mihdan-lite-youtube-embed
  *
  * @link https://github.com/paulirish/lite-youtube-embed
  * @package mihdan-lite-youtube-embed
