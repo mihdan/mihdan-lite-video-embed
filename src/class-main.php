@@ -130,7 +130,7 @@ class Main {
 
 						$result = '';
 
-						$result .= '<lite-youtube videoid="%1$s" style="background-image: url(https://i.ytimg.com/vi/%1$s/hqdefault.jpg);">';
+						$result .= '<lite-youtube videoid="%1$s" style="background-image: url(https://i.ytimg.com/vi/%1$s/%6$s.jpg);">';
 							$result .= '<div class="lty-playbtn"></div>';
 						$result .= '</lite-youtube>';
 
@@ -139,12 +139,12 @@ class Main {
 								$result .= '<meta itemprop="description" content="%3$s">';
 								$result .= '<meta itemprop="duration" content="T6M34S">';
 								$result .= '<link itemprop="url" href="%2$s">';
-								$result .= '<link itemprop="thumbnailUrl" href="https://i.ytimg.com/vi/%1$s/hqdefault.jpg">';
+								$result .= '<link itemprop="thumbnailUrl" href="https://i.ytimg.com/vi/%1$s/%6$s.jpg">';
 								$result .= '<meta itemprop="name" content="%4$s">';
 								$result .= '<meta itemprop="uploadDate" content="%5$s">';
 								$result .= '<meta itemprop="isFamilyFriendly" content="true">';
 								$result .= '<span itemprop="thumbnail" itemscope="" itemtype="http://schema.org/ImageObject">';
-									$result .= '<meta itemprop="contentUrl" content="https://i.ytimg.com/vi/%1$s/hqdefault.jpg">';
+									$result .= '<meta itemprop="contentUrl" content="https://i.ytimg.com/vi/%1$s/%6$s.jpg">';
 									$result .= '<meta itemprop="width" content="640">';
 									$result .= '<meta itemprop="height" content="360">';
 								$result .= '</span>';
@@ -157,7 +157,8 @@ class Main {
 							$url,
 							'description',
 							'name',
-							'2020-06-12'
+							'2020-06-12',
+							$this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' )
 						);
 
 						return $result;

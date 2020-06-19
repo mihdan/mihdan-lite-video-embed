@@ -50,6 +50,22 @@ class Settings {
 			)
 		);
 
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
+				'id'      => 'preview_quality',
+				'type'    => 'select',
+				'name'    => __( 'Preview Quality', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					'sddefault' => __( 'Standard Quality', 'mihdan-lite-youtube-embed' ),
+					'hqdefault'  => __( 'High Quality', 'mihdan-lite-youtube-embed' ),
+					'mqdefault'  => __( 'Medium Quality', 'mihdan-lite-youtube-embed' ),
+					'maxresdefault'  => __( 'Maximum Resolution', 'mihdan-lite-youtube-embed' ),
+				),
+				'default' => 'sddefault',
+			)
+		);
+
 		$this->wposa->add_section(
 			array(
 				'id'    => 'mlye_contacts',
