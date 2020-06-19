@@ -44,11 +44,23 @@ if ( ! class_exists( 'WP_OSA' ) ) :
 		private $fields_array = array();
 
 		/**
-		 * Constructor.
+		 * Utils instance.
 		 *
+		 * @var Utils $utils
+		 */
+		private $utils;
+
+		/**
+		 * Constructor.
+         *
+		 * @param Utils $utils Utils instance.
+         *
 		 * @since  1.0.0
 		 */
-		public function __construct() {
+		public function __construct( Utils $utils ) {
+
+		    $this->utils = $utils;
+
 			// Enqueue the admin scripts.
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 
@@ -717,17 +729,17 @@ if ( ! class_exists( 'WP_OSA' ) ) :
 		public function admin_menu() {
 			// add_options_page( $page_title, $menu_title, $capability, $menu_slug, array( $this, $callable ) );
 			add_options_page(
-				'WP OOP Settings API',
-				'WP OOP Settings API',
+				$this->utils->get_plugin_title(),
+				$this->utils->get_plugin_title(),
 				'manage_options',
-				'wp_osa_settings',
+				$this->utils->get_plugin_slug(),
 				array( $this, 'plugin_page' )
 			);
 		}
 
 		public function plugin_page() {
 			echo '<div class="wrap">';
-			echo '<h1>WP OOP Settings API <span style="font-size:50%;">v' . WPOSA_VERSION . '</span></h1>';
+			echo '<h1>' . $this->utils->get_plugin_title() . ' <span style="font-size:50%;">v' . $this->utils->get_plugin_version() . '</span></h1>';
 			$this->show_navigation();
 			$this->show_forms();
 			echo '</div>';
