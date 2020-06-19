@@ -40,4 +40,27 @@ class Utils {
 	public function get_plugin_url() {
 		return MIHDAN_LITE_YOUTUBE_EMBED_URL;
 	}
+
+	/**
+	 * Get plugin slug.
+	 *
+	 * @return string
+	 */
+	public function get_plugin_slug() {
+		return MIHDAN_LITE_YOUTUBE_EMBED_SLUG;
+	}
+
+	/**
+	 * Get plugin title.
+	 *
+	 * @return string
+	 */
+	public function get_plugin_title() {
+		$slug = MIHDAN_LITE_YOUTUBE_EMBED_SLUG;
+		$slug = str_replace( 'mihdan-', '', $slug );
+		$slug = str_replace( '-', ' ', $slug );
+		$slug = ucwords( $slug );
+
+		return $slug;
+	}
 }
