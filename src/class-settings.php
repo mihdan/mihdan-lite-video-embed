@@ -115,17 +115,17 @@ class Settings {
 				'type'    => 'radio',
 				'name'    => __( 'Player Size', 'mihdan-lite-youtube-embed' ),
 				'options' => array(
-					'420X236'  => __( '420X236 (Mini 16:9 player)', 'mihdan-lite-youtube-embed' ),
-					'560X315'  => __( '560X315 (Smaller 16:9 player)', 'mihdan-lite-youtube-embed' ),
-					'640X360'  => __( '640X360 (YouTube default for 16:9-ratio video)', 'mihdan-lite-youtube-embed' ),
-					'853X480'  => __( '853X480 (Larger 16:9 player)', 'mihdan-lite-youtube-embed' ),
-					'1280X720' => __( '1280X720 (Maxi 16:9 player)', 'mihdan-lite-youtube-embed' ),
-					'420X315'  => __( '420X315 (Smaller 4:3 player)', 'mihdan-lite-youtube-embed' ),
-					'480X360'  => __( '480X360 (Standard value, YouTube default for 4:3-ratio video)', 'mihdan-lite-youtube-embed' ),
-					'640X480'  => __( '640X480 (Larger 4:3 player)', 'mihdan-lite-youtube-embed' ),
-					'960X720'  => __( '960X720 (Maxi 4:3 player)', 'mihdan-lite-youtube-embed' ),
+					'420x236'  => __( '420x236 (Mini 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'560x315'  => __( '560x315 (Smaller 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'640x360'  => __( '640x360 (YouTube default for 16:9-ratio video)', 'mihdan-lite-youtube-embed' ),
+					'853x480'  => __( '853x480 (Larger 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'1280x720' => __( '1280x720 (Maxi 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'420x315'  => __( '420x315 (Smaller 4:3 player)', 'mihdan-lite-youtube-embed' ),
+					'480x360'  => __( '480x360 (Standard value, YouTube default for 4:3-ratio video)', 'mihdan-lite-youtube-embed' ),
+					'640x480'  => __( '640x480 (Larger 4:3 player)', 'mihdan-lite-youtube-embed' ),
+					'960x720'  => __( '960x720 (Maxi 4:3 player)', 'mihdan-lite-youtube-embed' ),
 				),
-				'default' => '480X360',
+				'default' => '480x360',
 			)
 		);
 
