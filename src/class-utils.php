@@ -24,6 +24,15 @@ class Utils {
 	}
 
 	/**
+	 * Get templates path.
+	 *
+	 * @return string
+	 */
+	public function get_templates_path() {
+		return MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/templates';
+	}
+
+	/**
 	 * Get plugin version.
 	 *
 	 * @return string

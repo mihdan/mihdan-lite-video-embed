@@ -7,6 +7,8 @@
 
 namespace Mihdan\LiteYouTubeEmbed;
 
+use Latte\Engine;
+
 /**
  * Class Main
  *
@@ -35,26 +37,24 @@ class Main {
 	private $wposa;
 
 	/**
-	 * Main constructor.
+	 * Engine instance.
 	 *
-	 * @param Utils $utils Utils instance
+	 * @var Engine $latte
 	 */
-	public function __construct( Utils $utils ) {
-		$this->utils = $utils;
-
-		$this->include_requirements();
-		$this->setup_hooks();
-
-		$this->wposa    = new WP_OSA( $this->utils );
-		$this->settings = new Settings( $this->wposa );
-	}
+	private $latte;
 
 	/**
-	 * Include requirements.
+	 * Main constructor.
 	 */
-	public function include_requirements() {
-		require_once $this->utils->get_plugin_path() . '/src/class-wp-osa.php';
-		require_once $this->utils->get_plugin_path() . '/src/class-settings.php';
+	public function __construct() {
+		$this->utils    = new Utils();
+		$this->wposa    = new WP_OSA( $this->utils );
+		$this->settings = new Settings( $this->wposa );
+		$this->latte    = new Engine();
+
+		//$this->latte->setTempDirectory( $this->utils->get_plugin_path() . '/templates' );
+
+		$this->setup_hooks();
 	}
 
 	/**
@@ -126,42 +126,26 @@ class Main {
 					preg_match( '#watch\?v=([0-9a-z\-\_]+)#i', $url, $matchs );
 
 					if ( ! empty( $matchs[1] ) ) {
-						$video_id = $matchs[1];
 
-						$result = '';
+						$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '480x360' ) );
 
-						$result .= '<lite-youtube videoid="%1$s" style="background-image: url(https://i.ytimg.com/vi/%1$s/%6$s.jpg);">';
-							$result .= '<div class="lty-playbtn"></div>';
-						$result .= '</lite-youtube>';
-
-						if ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ) {
-							$result .= '<div style="display: none" itemprop="video" itemscope="" itemtype="https://schema.org/VideoObject">';
-								$result .= '<meta itemprop="description" content="%3$s">';
-								$result .= '<meta itemprop="duration" content="T6M34S">';
-								$result .= '<link itemprop="url" href="%2$s">';
-								$result .= '<link itemprop="thumbnailUrl" href="https://i.ytimg.com/vi/%1$s/%6$s.jpg">';
-								$result .= '<meta itemprop="name" content="%4$s">';
-								$result .= '<meta itemprop="uploadDate" content="%5$s">';
-								$result .= '<meta itemprop="isFamilyFriendly" content="true">';
-								$result .= '<span itemprop="thumbnail" itemscope="" itemtype="http://schema.org/ImageObject">';
-									$result .= '<meta itemprop="contentUrl" content="https://i.ytimg.com/vi/%1$s/%6$s.jpg">';
-									$result .= '<meta itemprop="width" content="640">';
-									$result .= '<meta itemprop="height" content="360">';
-								$result .= '</span>';
-							$result .= '</div>';
-						}
-
-						$result = sprintf(
-							$result,
-							$video_id,
-							$url,
-							'description',
-							'name',
-							'2020-06-12',
-							$this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' )
+						$params = array(
+							'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
+							'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
+							'video_id'        => $matchs[1],
+							'player_width'    => $player_size[0],
+							'player_height'   => $player_size[1],
+							'upload_date'     => get_the_date( 'Y-m-d' ),
+							'duration'        => 'T6M34S',
+							'url'             => $url,
+							'description'     => get_the_excerpt(),
+							'name'            => get_the_title(),
 						);
 
-						return $result;
+						return $this->latte->renderToString(
+							$this->utils->get_templates_path() . '/template-video.latte',
+							$params
+						);
 					}
 				}
 
