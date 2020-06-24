@@ -30,12 +30,12 @@ e.g.
 
 == Frequently Asked Questions ==
 
-
-== Screenshots ==
-
-
 == Changelog ==
 
+= 1.3 (24.06.2020) =
+* Fixed bugs
+* Flush oEmbed cache on plugin activate/deactivate
+* Flush oEmbed cache on plugin settings page
 
 == Upgrade Notice ==
 
