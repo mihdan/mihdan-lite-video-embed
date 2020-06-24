@@ -60,6 +60,15 @@ class Utils {
 	}
 
 	/**
+	 * Get plugin file.
+	 *
+	 * @return string
+	 */
+	public function get_plugin_file() {
+		return MIHDAN_LITE_YOUTUBE_EMBED_FILE;
+	}
+
+	/**
 	 * Get plugin title.
 	 *
 	 * @return string
