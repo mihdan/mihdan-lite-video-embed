@@ -8,6 +8,7 @@
 namespace Mihdan\LiteYouTubeEmbed;
 
 use Latte\Engine;
+use wpdb;
 
 /**
  * Class Main
@@ -15,6 +16,13 @@ use Latte\Engine;
  * @package mihdan-lite-youtube-embed
  */
 class Main {
+	/**
+	 * wpdb instance.
+	 *
+	 * @var wpdb $wpdb
+	 */
+
+	private $wpdb;
 	/**
 	 * Utils instance.
 	 *
@@ -47,6 +55,7 @@ class Main {
 	 * Main constructor.
 	 */
 	public function __construct() {
+		$this->wpdb     = $GLOBALS['wpdb'];
 		$this->utils    = new Utils();
 		$this->wposa    = new WP_OSA( $this->utils );
 		$this->settings = new Settings( $this->wposa );
@@ -154,5 +163,30 @@ class Main {
 			10,
 			3
 		);
+
+		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
+		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Fired on plugin activate.
+	 */
+	public function on_activate() {
+		$this->clear_oembed_cache();
+	}
+
+	/**
+	 * Fired on plugin deactivate.
+	 */
+	public function on_deactivate() {
+		$this->clear_oembed_cache();
+	}
+
+	/**
+	 * Clear all oembed cache.
+	 */
+	public function clear_oembed_cache() {
+		$sql = "DELETE FROM {$this->wpdb->postmeta} WHERE LEFT(meta_key, 8) = '_oembed_'";
+		$this->wpdb->query( $sql );
 	}
 }
