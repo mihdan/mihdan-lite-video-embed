@@ -131,6 +131,23 @@ class Settings {
 
 		$this->wposa->add_section(
 			array(
+				'id'    => 'mlye_tools',
+				'title' => __( 'Tools', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_tools',
+			array(
+				'id'          => 'clear_cache',
+				'type'        => 'checkbox',
+				'name'        => __( 'Clear Cache', 'mihdan-lite-youtube-embed' ),
+				'desc'        => __( 'Clear oEmbed cache for all posts.', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_section(
+			array(
 				'id'    => 'mlye_contacts',
 				'title' => __( 'Contacts', 'mihdan-lite-youtube-embed' ),
 			)

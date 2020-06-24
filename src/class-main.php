@@ -164,8 +164,30 @@ class Main {
 			3
 		);
 
+		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
+
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Trigger for clear cache via button in settings page.
+	 *
+	 * @param array $value     New value.
+	 * @param array $old_value Old value.
+	 *
+	 * @return array
+	 */
+	public function maybe_clear_cache( $value, $old_value ) {
+		if ( isset( $value['clear_cache'] ) && 'on' === $value['clear_cache'] ) {
+			$value['clear_cache'] = 'off';
+
+			$this->clear_oembed_cache();
+
+			add_settings_error( 'general', 'embed_cache_cleared', __( 'Cache was cleared successfully.' ), 'success' );
+		}
+
+		return $value;
 	}
 
 	/**
