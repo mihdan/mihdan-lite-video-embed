@@ -138,6 +138,24 @@ class Main {
 
 						$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '480x360' ) );
 
+						// Get duration from API.
+						$duration = 'T6M34S';
+						$api_key  = $this->wposa->get_option( 'api_key', 'mlye_general' );
+
+						if ( $api_key ) {
+							$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails', $matchs[1], $api_key );
+							$request = wp_remote_get( $request );
+
+							if ( ! is_wp_error( $request ) ) {
+								$body = wp_remote_retrieve_body( $request );
+
+								if ( $body ) {
+									$body     = json_decode( $body );
+									$duration = $body->items[0]->contentDetails->duration;
+								}
+							}
+						}
+
 						$params = array(
 							'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
 							'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
@@ -145,9 +163,9 @@ class Main {
 							'player_width'    => $player_size[0],
 							'player_height'   => $player_size[1],
 							'upload_date'     => get_the_date( 'Y-m-d' ),
-							'duration'        => 'T6M34S',
+							'duration'        => $duration,
 							'url'             => $url,
-							'description'     => get_the_excerpt(),
+							'description'     => wp_strip_all_tags( get_the_excerpt() ),
 							'name'            => get_the_title(),
 						);
 
@@ -160,7 +178,7 @@ class Main {
 
 				return $null;
 			},
-			10,
+			20,
 			3
 		);
 

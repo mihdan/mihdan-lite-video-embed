@@ -43,7 +43,7 @@ class Settings {
 				'type'        => 'text',
 				'name'        => __( 'API Key', 'mihdan-lite-youtube-embed' ),
 				'placeholder' => 'AIzaSyDe12JAR7DaIzUSGFIfiMuPPIOf1YMaKr4',
-				'desc'        => __( 'Plugin uses YouTube\'s API to fetch information on each video. <br />For your site to use that API, you will have to <a href="https://console.developers.google.com/project/" target="_blank">register</a> your site as a new application, <br />enable the YouTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
+				'desc'        => __( 'Plugin uses YouTube\'s API to fetch information on each video. <br />For your site to use that API, you will have to <a href="https://console.developers.google.com/apis/library" target="_blank">register</a> your site as a new application, <br />enable the YouTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
