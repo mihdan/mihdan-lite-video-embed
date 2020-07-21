@@ -8,7 +8,7 @@ jobs:
     name: New tag
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install dependencies
         run: composer install --no-dev --prefer-dist --no-progress --no-suggest
