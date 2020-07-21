@@ -61,8 +61,6 @@ class Main {
 		$this->settings = new Settings( $this->wposa );
 		$this->latte    = new Engine();
 
-		//$this->latte->setTempDirectory( $this->utils->get_plugin_path() . '/templates' );
-
 		$this->setup_hooks();
 	}
 
@@ -136,6 +134,8 @@ class Main {
 
 					if ( ! empty( $matchs[1] ) ) {
 
+						$post = get_post();
+
 						$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '480x360' ) );
 
 						// Get duration from API.
@@ -162,11 +162,14 @@ class Main {
 							'video_id'        => $matchs[1],
 							'player_width'    => $player_size[0],
 							'player_height'   => $player_size[1],
-							'upload_date'     => get_the_date( 'Y-m-d' ),
+							'player_class'    => ( 1.8 === round( $player_size[0] / $player_size[1], 1 ) )
+								? 'lite-youtube_16x9'
+								: 'lite-youtube_4x3',
+							'upload_date'     => get_the_date( 'Y-m-d', $post->ID ),
 							'duration'        => $duration,
 							'url'             => $url,
-							'description'     => wp_strip_all_tags( get_the_excerpt() ),
-							'name'            => get_the_title(),
+							'description'     => wp_strip_all_tags( get_the_excerpt( $post->ID ) ),
+							'name'            => get_the_title( $post->ID ),
 						);
 
 						return $this->latte->renderToString(
