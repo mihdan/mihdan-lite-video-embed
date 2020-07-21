@@ -1,6 +1,7 @@
 {
     "require": {
-        "latte/latte": "2.4"
+        "latte/latte": "2.4",
+        "ext-json": "*"
     },
     "autoload": {
         "classmap": [
