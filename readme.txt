@@ -32,6 +32,10 @@ e.g.
 
 == Changelog ==
 
+= 1.4.3 (22.07.2020) =
+* Fixed bugs
+* Clear embed cache on plugin update
+
 = 1.4 (21.07.2020) =
 * Fixed bugs
 * Add video duration support
@@ -40,6 +44,3 @@ e.g.
 * Fixed bugs
 * Flush oEmbed cache on plugin activate/deactivate
 * Flush oEmbed cache on plugin settings page
-
-== Upgrade Notice ==
-
