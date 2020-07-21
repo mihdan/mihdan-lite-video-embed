@@ -34,6 +34,7 @@ e.g.
 
 = 1.4.3 (22.07.2020) =
 * Fixed bugs
+* Add support for player size
 * Clear embed cache on plugin update
 
 = 1.4 (21.07.2020) =
