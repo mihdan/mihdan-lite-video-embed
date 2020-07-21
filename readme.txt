@@ -32,6 +32,10 @@ e.g.
 
 == Changelog ==
 
+= 1.4 (21.07.2020) =
+* Fixed bugs
+* Add video duration support
+
 = 1.3 (24.06.2020) =
 * Fixed bugs
 * Flush oEmbed cache on plugin activate/deactivate
