@@ -32,6 +32,11 @@ e.g.
 
 == Changelog ==
 
+= 1.4.4 (22.07.2020) =
+* Fixed bugs
+* Add OceanWP theme support
+* Add responsive sizes to player
+
 = 1.4.3 (22.07.2020) =
 * Fixed bugs
 * Add support for player size
