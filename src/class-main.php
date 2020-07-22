@@ -136,22 +136,32 @@ class Main {
 
 						$post = get_post();
 
-						$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '480x360' ) );
+						$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
 
 						// Get duration from API.
-						$duration = 'T6M34S';
-						$api_key  = $this->wposa->get_option( 'api_key', 'mlye_general' );
+						$duration    = 'T6M34S';
+						$upload_date = get_the_date( 'Y-m-d', $post->ID );
+						$name        = get_the_title( $post->ID );
+						$description = get_the_excerpt( $post->ID );
+						$api_key     = $this->wposa->get_option( 'api_key', 'mlye_general' );
+						$video_id    = $matchs[1];
 
 						if ( $api_key ) {
-							$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails', $matchs[1], $api_key );
+							$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet', $video_id, $api_key );
 							$request = wp_remote_get( $request );
 
 							if ( ! is_wp_error( $request ) ) {
 								$body = wp_remote_retrieve_body( $request );
 
 								if ( $body ) {
-									$body     = json_decode( $body );
-									$duration = $body->items[0]->contentDetails->duration;
+									$body            = json_decode( $body );
+									$content_details = $body->items[0]->contentDetails;
+									$snippet         = $body->items[0]->snippet;
+
+									$duration    = $content_details->duration;
+									$name        = $snippet->title;
+									$description = $snippet->description;
+									$upload_date = $snippet->publishedAt;
 								}
 							}
 						}
@@ -159,17 +169,15 @@ class Main {
 						$params = array(
 							'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
 							'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
-							'video_id'        => $matchs[1],
-							'player_width'    => $player_size[0],
-							'player_height'   => $player_size[1],
-							'player_class'    => ( 1.8 === round( $player_size[0] / $player_size[1], 1 ) )
-								? 'lite-youtube_16x9'
-								: 'lite-youtube_4x3',
-							'upload_date'     => get_the_date( 'Y-m-d', $post->ID ),
+							'video_id'        => $video_id,
+							'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
+							'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
+							'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
+							'upload_date'     => $upload_date,
 							'duration'        => $duration,
 							'url'             => $url,
-							'description'     => wp_strip_all_tags( get_the_excerpt( $post->ID ) ),
-							'name'            => get_the_title( $post->ID ),
+							'description'     => mb_substr( wp_strip_all_tags( $description ), 0, 250, 'UTF-8' ),
+							'name'            => $name,
 						);
 
 						return $this->latte->renderToString(

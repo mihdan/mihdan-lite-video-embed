@@ -115,17 +115,19 @@ class Settings {
 				'type'    => 'radio',
 				'name'    => __( 'Player Size', 'mihdan-lite-youtube-embed' ),
 				'options' => array(
+					'16x9'     => __( 'Responsive (16:9 player)', 'mihdan-lite-youtube-embed' ),
 					'420x236'  => __( '420x236 (Mini 16:9 player)', 'mihdan-lite-youtube-embed' ),
 					'560x315'  => __( '560x315 (Smaller 16:9 player)', 'mihdan-lite-youtube-embed' ),
 					'640x360'  => __( '640x360 (YouTube default for 16:9-ratio video)', 'mihdan-lite-youtube-embed' ),
 					'853x480'  => __( '853x480 (Larger 16:9 player)', 'mihdan-lite-youtube-embed' ),
 					'1280x720' => __( '1280x720 (Maxi 16:9 player)', 'mihdan-lite-youtube-embed' ),
+					'4x3'      => __( 'Responsive (4:3 player)', 'mihdan-lite-youtube-embed' ),
 					'420x315'  => __( '420x315 (Smaller 4:3 player)', 'mihdan-lite-youtube-embed' ),
 					'480x360'  => __( '480x360 (Standard value, YouTube default for 4:3-ratio video)', 'mihdan-lite-youtube-embed' ),
 					'640x480'  => __( '640x480 (Larger 4:3 player)', 'mihdan-lite-youtube-embed' ),
 					'960x720'  => __( '960x720 (Maxi 4:3 player)', 'mihdan-lite-youtube-embed' ),
 				),
-				'default' => '480x360',
+				'default' => '16x9',
 			)
 		);
 

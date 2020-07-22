@@ -9,6 +9,62 @@ lite-youtube {
     max-width: inherit !important;
 }
 
+lite-youtube.lite-youtube_420x236 {
+    width: 420px !important;
+    height: 236px !important;
+}
+lite-youtube.lite-youtube_560x315 {
+    width: 560px !important;
+    height: 315px !important;
+}
+lite-youtube.lite-youtube_640x360 {
+    width: 640px !important;
+    height: 360px !important;
+}
+lite-youtube.lite-youtube_853x480 {
+    width: 853px !important;
+    height: 480px !important;
+}
+lite-youtube.lite-youtube_1280x720 {
+    width: 1280px !important;
+    height: 720px !important;
+}
+lite-youtube.lite-youtube_420x315 {
+    width: 420px !important;
+    height: 315px !important;
+}
+lite-youtube.lite-youtube_480x360 {
+    width: 480px !important;
+    height: 360px !important;
+}
+lite-youtube.lite-youtube_640x480 {
+    width: 640px !important;
+    height: 480px !important;
+}
+lite-youtube.lite-youtube_960x720 {
+    width: 960px !important;
+    height: 720px !important;
+}
+
+lite-youtube.lite-youtube_16x9,
+lite-youtube.lite-youtube_4x3 {
+    width: 100% !important;
+}
+
+lite-youtube.lite-youtube_16x9::after,
+lite-youtube.lite-youtube_4x3::after {
+    content: "";
+    display: block;
+}
+
+lite-youtube.lite-youtube_16x9::after {
+    padding-bottom: calc(100% / (16 / 9));
+}
+
+lite-youtube.lite-youtube_4x3::after {
+    padding-bottom: calc(100% / (4 / 3));
+}
+
 /* gradient */
 lite-youtube::before {
     content: '';
@@ -24,14 +80,6 @@ lite-youtube::before {
     transition: all 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* responsive iframe with a 16:9 aspect ratio
-    thanks https://css-tricks.com/responsive-iframes/
-*/
-/*lite-youtube::after {
-    content: "";
-    display: block;
-    padding-bottom: calc(100% / (16 / 9));
-}*/
 lite-youtube > iframe {
     width: 100%;
     height: 100%;
