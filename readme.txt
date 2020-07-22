@@ -36,6 +36,7 @@ e.g.
 * Fixed bugs
 * Add OceanWP theme support
 * Add responsive sizes to player
+* Add micro data for video from API
 
 = 1.4.3 (22.07.2020) =
 * Fixed bugs
