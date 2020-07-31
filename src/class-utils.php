@@ -69,6 +69,15 @@ class Utils {
 	}
 
 	/**
+	 * Get plugin base name.
+	 *
+	 * @return string
+	 */
+	public function get_plugin_basename() {
+		return plugin_basename( MIHDAN_LITE_YOUTUBE_EMBED_FILE );
+	}
+
+	/**
 	 * Get plugin title.
 	 *
 	 * @return string

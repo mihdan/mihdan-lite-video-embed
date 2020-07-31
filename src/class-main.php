@@ -68,6 +68,7 @@ class Main {
 	 * Setup hooks.
 	 */
 	public function setup_hooks() {
+		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 		add_action(
 			'wp_enqueue_scripts',
 			function () {
@@ -87,19 +88,6 @@ class Main {
 		);
 
 		add_action(
-			'admin_enqueue_scripts',
-			function () {
-				wp_enqueue_script(
-					MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
-					MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/js/lite-yt-embed.js',
-					[],
-					filemtime( MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/frontend/js/lite-yt-embed.js' ),
-					true
-				);
-			}
-		);
-
-		add_action(
 			'after_setup_theme',
 			function () {
 				// Add support for editor styles.
@@ -110,17 +98,18 @@ class Main {
 			}
 		);
 
-		add_action(
-			'enqueue_block_editor_assets',
+		/*add_action(
+			'enqueue_block_assets',
 			function () {
 				wp_enqueue_style(
 					MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
 					MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/css/lite-yt-embed.css',
-					array( 'wp-edit-blocks' ),
+					//array( 'wp-edit-blocks' ),
+					array(),
 					time()
 				);
 			}
-		);
+		);*/
 
 		/**
 		 * @link https://wp-kama.ru/hook/oembed_dataparse
@@ -212,6 +201,26 @@ class Main {
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Add plugin action links
+	 *
+	 * @param array  $actions Default actions.
+	 * @param string $plugin_file Plugin file.
+	 *
+	 * @return array
+	 */
+	public function add_settings_link( $actions, $plugin_file ) {
+		if ( $this->utils->get_plugin_basename() === $plugin_file ) {
+			$actions[] = sprintf(
+				'<a href="%s">%s</a>',
+				admin_url( 'options-general.php?page=mihdan-lite-youtube-embed' ),
+				esc_html__( 'Settings', 'mihdan-lite-youtube-embed' )
+			);
+		}
+
+		return $actions;
 	}
 
 	/**
