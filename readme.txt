@@ -32,6 +32,9 @@ e.g.
 
 == Changelog ==
 
+= 1.4.5 (31.07.2020) =
+* Fixed bug with microdata
+
 = 1.4.4 (22.07.2020) =
 * Fixed bugs
 * Added OceanWP theme support
