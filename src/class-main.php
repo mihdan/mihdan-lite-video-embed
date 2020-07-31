@@ -123,80 +123,145 @@ class Main {
 		);
 
 		/**
-		 * @link https://www.youtube.com/watch?v=6VLL9Txw6c4
+		 * @link https://wp-kama.ru/hook/oembed_dataparse
+		 * @link https://developers.google.com/search/docs/data-types/video?hl=ru
 		 */
 		add_filter(
-			'pre_oembed_result',
-			function ( $null, $url, $attr ) {
+			'oembed_dataparse',
+			function ( $return, $data, $url ) {
 
-				if ( preg_match( '#youtu#i', $url ) ) {
-					preg_match( '#watch\?v=([0-9a-z\-\_]+)#i', $url, $matchs );
+				if ( 'YouTube' === $data->provider_name ) {
+					preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
 
-					if ( ! empty( $matchs[1] ) ) {
+					if ( ! $matches ) {
+						return $return;
+					}
 
-						$post = get_post();
+					$post = get_post();
 
-						$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
+					$video_id  = $matches[2];
+					$embed_url = $matches[1];
 
-						// Get duration from API.
-						$duration    = 'T6M34S';
-						$upload_date = get_the_date( 'Y-m-d', $post->ID );
-						$name        = get_the_title( $post->ID );
-						$description = get_the_excerpt( $post->ID );
-						$api_key     = $this->wposa->get_option( 'api_key', 'mlye_general' );
-						$video_id    = $matchs[1];
+					$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
 
-						if ( $api_key ) {
-							$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet', $video_id, $api_key );
-							$request = wp_remote_get( $request );
+					// Get duration from API.
+					$duration    = 'T00H10M00S';
+					$upload_date = get_post_time( 'c', false, $post, false );
+					$name        = ( ! empty( $data->title ) )
+						? $data->title
+						: $post->post_title;
 
-							if ( ! is_wp_error( $request ) ) {
-								$body = wp_remote_retrieve_body( $request );
+					$description = ( ! empty( $post->post_excerpt ) )
+						? $post->post_excerpt
+						: $this->wposa->get_option( 'description', 'mlye_general' );
 
-								if ( $body ) {
-									$body            = json_decode( $body );
-									$content_details = $body->items[0]->contentDetails;
-									$snippet         = $body->items[0]->snippet;
+					$api_key     = $this->wposa->get_option( 'api_key', 'mlye_general' );
 
-									$duration    = $content_details->duration;
-									$name        = $snippet->title;
-									$description = $snippet->description;
-									$upload_date = $snippet->publishedAt;
-								}
+					if ( $api_key ) {
+						$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet', $video_id, $api_key );
+						$request = wp_remote_get( $request );
+
+						if ( ! is_wp_error( $request ) ) {
+							$body = wp_remote_retrieve_body( $request );
+
+							if ( $body ) {
+								$body            = json_decode( $body );
+								$content_details = $body->items[0]->contentDetails;
+								$snippet         = $body->items[0]->snippet;
+
+								$duration    = $content_details->duration;
+								$name        = $snippet->title;
+								$description = $snippet->description;
+								$upload_date = $snippet->publishedAt;
 							}
 						}
-
-						$params = array(
-							'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
-							'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
-							'video_id'        => $video_id,
-							'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
-							'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
-							'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
-							'upload_date'     => $upload_date,
-							'duration'        => $duration,
-							'url'             => $url,
-							'description'     => mb_substr( wp_strip_all_tags( $description ), 0, 250, 'UTF-8' ),
-							'name'            => $name,
-						);
-
-						return $this->latte->renderToString(
-							$this->utils->get_templates_path() . '/template-video.latte',
-							$params
-						);
 					}
+
+					$description = str_replace( PHP_EOL, ' ', $description );
+					$description = wp_strip_all_tags( $description );
+
+					$params = array(
+						'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
+						'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
+						'video_id'        => $video_id,
+						'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
+						'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
+						'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
+						'upload_date'     => $upload_date,
+						'duration'        => $duration,
+						'url'             => $url,
+						'description'     => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
+						'name'            => $name,
+						'embed_url'       => $embed_url,
+					);
+
+					return $this->latte->renderToString(
+						$this->utils->get_templates_path() . '/template-video.latte',
+						$params
+					);
 				}
 
-				return $null;
+				return $return;
 			},
-			20,
+			10,
 			3
 		);
 
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
+		add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 );
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Validate API key.
+	 *
+	 * @param string $api_key API key.
+	 *
+	 * @link https://stackoverflow.com/questions/21096602/using-youtube-v3-api-key/21117446#21117446
+	 * @return boolean
+	 */
+	public function validate_api_key( $api_key ) {
+		$request = sprintf( 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=YouTube+Data+API&type=video&key=%s', $api_key );
+		$request = wp_remote_get( $request );
+
+		if ( is_wp_error( $request ) ) {
+			return false;
+		}
+
+		$body = wp_remote_retrieve_body( $request );
+
+		if ( ! $body ) {
+			return false;
+		}
+
+		$body = json_decode( $body );
+
+		if ( $body->error ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Trigger for clear cache via button in settings page.
+	 *
+	 * @param array $value     New value.
+	 * @param array $old_value Old value.
+	 *
+	 * @return array
+	 */
+	public function maybe_validate_api_key( $value, $old_value ) {
+
+		if ( $this->validate_api_key( $value ['api_key'] ) ) {
+			add_settings_error( 'general', 'api_key_valid', __( 'API key is valid.' ), 'success' );
+		} else {
+			add_settings_error( 'general', 'api_key_invalid', __( 'API key is invalid.' ), 'error' );
+		}
+
+		return $value;
 	}
 
 	/**

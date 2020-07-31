@@ -32,6 +32,12 @@ e.g.
 
 == Changelog ==
 
+= 1.4.6 (31.07.2020) =
+* Added support for short link
+* Added support for embedUrl
+* Added setting for default video description
+* Added validation API key
+
 = 1.4.5 (31.07.2020) =
 * Fixed bug with microdata
 
