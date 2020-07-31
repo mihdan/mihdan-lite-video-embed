@@ -50,6 +50,16 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_general',
 			array(
+				'id'          => 'description',
+				'type'        => 'textarea',
+				'name'        => __( 'Description', 'mihdan-lite-youtube-embed' ),
+				'desc'        => __( 'Default video description', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
 				'id'      => 'use_microdata',
 				'type'    => 'select',
 				'name'    => __( 'Use Microdata', 'mihdan-lite-youtube-embed' ),
@@ -100,8 +110,8 @@ class Settings {
 				'name'    => __( 'Preview Quality', 'mihdan-lite-youtube-embed' ),
 				'options' => array(
 					'sddefault'     => __( 'Standard Quality', 'mihdan-lite-youtube-embed' ),
-					'hqdefault'     => __( 'High Quality', 'mihdan-lite-youtube-embed' ),
 					'mqdefault'     => __( 'Medium Quality', 'mihdan-lite-youtube-embed' ),
+					'hqdefault'     => __( 'High Quality', 'mihdan-lite-youtube-embed' ),
 					'maxresdefault' => __( 'Maximum Resolution', 'mihdan-lite-youtube-embed' ),
 				),
 				'default' => 'sddefault',
