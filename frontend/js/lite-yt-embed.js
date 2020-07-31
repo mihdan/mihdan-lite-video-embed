@@ -17,7 +17,7 @@ class LiteYTEmbed extends HTMLElement {
         // Gotta encode the untrusted value
         // https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#rule-2---attribute-escape-before-inserting-untrusted-data-into-html-common-attributes
         this.videoId = encodeURIComponent(this.getAttribute('videoid'));
-        console.log(this);
+        //console.log(this);
 
         /**
          * Lo, the youtube placeholder image!  (aka the thumbnail, poster image, etc)

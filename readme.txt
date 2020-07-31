@@ -32,6 +32,11 @@ e.g.
 
 == Changelog ==
 
+= 1.4.7 (01.08.2020) =
+* Added support for Gutenberg
+* Code refactoring
+* WPCS & PHPDoc
+
 = 1.4.6 (31.07.2020) =
 * Added support for short link
 * Added support for embedUrl

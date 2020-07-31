@@ -69,138 +69,141 @@ class Main {
 	 */
 	public function setup_hooks() {
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
-		add_action(
-			'wp_enqueue_scripts',
-			function () {
-				wp_enqueue_script(
-					MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
-					MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/js/lite-yt-embed.js',
-					[],
-					filemtime( MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/frontend/js/lite-yt-embed.js' ),
-					true
-				);
-
-				wp_enqueue_style(
-					MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
-					MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/css/lite-yt-embed.css'
-				);
-			}
-		);
-
-		add_action(
-			'after_setup_theme',
-			function () {
-				// Add support for editor styles.
-				add_theme_support( 'editor-styles' );
-
-				// Enqueue editor styles.
-				add_editor_style( MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/css/lite-yt-embed.css' );
-			}
-		);
-
-		/*add_action(
-			'enqueue_block_assets',
-			function () {
-				wp_enqueue_style(
-					MIHDAN_LITE_YOUTUBE_EMBED_SLUG,
-					MIHDAN_LITE_YOUTUBE_EMBED_URL . '/frontend/css/lite-yt-embed.css',
-					//array( 'wp-edit-blocks' ),
-					array(),
-					time()
-				);
-			}
-		);*/
-
-		/**
-		 * @link https://wp-kama.ru/hook/oembed_dataparse
-		 * @link https://developers.google.com/search/docs/data-types/video?hl=ru
-		 */
-		add_filter(
-			'oembed_dataparse',
-			function ( $return, $data, $url ) {
-
-				if ( 'YouTube' === $data->provider_name ) {
-					preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
-
-					if ( ! $matches ) {
-						return $return;
-					}
-
-					$post = get_post();
-
-					$video_id  = $matches[2];
-					$embed_url = $matches[1];
-
-					$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
-
-					// Get duration from API.
-					$duration    = 'T00H10M00S';
-					$upload_date = get_post_time( 'c', false, $post, false );
-					$name        = ( ! empty( $data->title ) )
-						? $data->title
-						: $post->post_title;
-
-					$description = ( ! empty( $post->post_excerpt ) )
-						? $post->post_excerpt
-						: $this->wposa->get_option( 'description', 'mlye_general' );
-
-					$api_key     = $this->wposa->get_option( 'api_key', 'mlye_general' );
-
-					if ( $api_key ) {
-						$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet', $video_id, $api_key );
-						$request = wp_remote_get( $request );
-
-						if ( ! is_wp_error( $request ) ) {
-							$body = wp_remote_retrieve_body( $request );
-
-							if ( $body ) {
-								$body            = json_decode( $body );
-								$content_details = $body->items[0]->contentDetails;
-								$snippet         = $body->items[0]->snippet;
-
-								$duration    = $content_details->duration;
-								$name        = $snippet->title;
-								$description = $snippet->description;
-								$upload_date = $snippet->publishedAt;
-							}
-						}
-					}
-
-					$description = str_replace( PHP_EOL, ' ', $description );
-					$description = wp_strip_all_tags( $description );
-
-					$params = array(
-						'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
-						'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
-						'video_id'        => $video_id,
-						'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
-						'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
-						'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
-						'upload_date'     => $upload_date,
-						'duration'        => $duration,
-						'url'             => $url,
-						'description'     => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
-						'name'            => $name,
-						'embed_url'       => $embed_url,
-					);
-
-					return $this->latte->renderToString(
-						$this->utils->get_templates_path() . '/template-video.latte',
-						$params
-					);
-				}
-
-				return $return;
-			},
-			10,
-			3
-		);
-
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
+		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
+		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 10, 3 );
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
 		add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 );
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Change oembed HTML.
+	 *
+	 * @link https://wp-kama.ru/hook/oembed_dataparse
+	 * @link https://developers.google.com/search/docs/data-types/video
+	 *
+	 * @param string $return The returned oEmbed HTML.
+	 * @param object $data   A data object result from an oEmbed provider.
+	 * @param string $url    The URL of the content to be embedded.
+	 *
+	 * @return string
+	 */
+	public function oembed_html( $return, $data, $url ) {
+		if ( 'YouTube' === $data->provider_name ) {
+			preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
+
+			if ( ! $matches ) {
+				return $return;
+			}
+
+			$post = get_post();
+
+			$video_id  = $matches[2];
+			$embed_url = $matches[1];
+
+			$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
+
+			// Get duration from API.
+			$duration    = 'T00H10M00S';
+			$upload_date = get_post_time( 'c', false, $post, false );
+			$name        = ( ! empty( $data->title ) )
+				? $data->title
+				: $post->post_title;
+
+			$description = ( ! empty( $post->post_excerpt ) )
+				? $post->post_excerpt
+				: $this->wposa->get_option( 'description', 'mlye_general' );
+
+			$api_key     = $this->wposa->get_option( 'api_key', 'mlye_general' );
+
+			if ( $api_key ) {
+				$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet', $video_id, $api_key );
+				$request = wp_remote_get( $request );
+
+				if ( ! is_wp_error( $request ) ) {
+					$body = wp_remote_retrieve_body( $request );
+
+					if ( $body ) {
+						$body            = json_decode( $body );
+						$content_details = $body->items[0]->contentDetails;
+						$snippet         = $body->items[0]->snippet;
+
+						$duration    = $content_details->duration;
+						$name        = $snippet->title;
+						$description = $snippet->description;
+						$upload_date = $snippet->publishedAt;
+					}
+				}
+			}
+
+			$description = str_replace( PHP_EOL, ' ', $description );
+			$description = wp_strip_all_tags( $description );
+
+			$params = array(
+				'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
+				'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
+				'video_id'        => $video_id,
+				'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
+				'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
+				'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
+				'upload_date'     => $upload_date,
+				'duration'        => $duration,
+				'url'             => $url,
+				'description'     => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
+				'name'            => $name,
+				'embed_url'       => $embed_url,
+			);
+
+			return $this->latte->renderToString(
+				$this->utils->get_templates_path() . '/template-video.latte',
+				$params
+			);
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Enqueue Gutenberg assets.
+	 */
+	public function enqueue_gutenberg_assets() {
+		wp_enqueue_style(
+			$this->utils->get_plugin_slug(),
+			$this->utils->get_plugin_url() . '/admin/css/lite-yt-embed.css',
+			array(),
+			$this->utils->get_plugin_version()
+		);
+	}
+
+	/**
+	 * Enqueue tinymce assets.
+	 */
+	public function enqueue_tinymce_assets() {
+		add_editor_style( $this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed.css' );
+	}
+
+	/**
+	 * Enqueue frontend assets.
+	 */
+	public function enqueue_frontend_assets() {
+		wp_enqueue_script(
+			$this->utils->get_plugin_slug(),
+			$this->utils->get_plugin_url() . '/frontend/js/lite-yt-embed.js',
+			[],
+			$this->utils->get_plugin_version(),
+			true
+		);
+
+		wp_enqueue_style(
+			$this->utils->get_plugin_slug(),
+			$this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed.css',
+			array(),
+			$this->utils->get_plugin_version()
+		);
 	}
 
 	/**
