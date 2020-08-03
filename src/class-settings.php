@@ -50,16 +50,6 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_general',
 			array(
-				'id'          => 'description',
-				'type'        => 'textarea',
-				'name'        => __( 'Description', 'mihdan-lite-youtube-embed' ),
-				'desc'        => __( 'Default video description', 'mihdan-lite-youtube-embed' ),
-			)
-		);
-
-		$this->wposa->add_field(
-			'mlye_general',
-			array(
 				'id'      => 'use_microdata',
 				'type'    => 'select',
 				'name'    => __( 'Use Microdata', 'mihdan-lite-youtube-embed' ),
@@ -69,6 +59,16 @@ class Settings {
 				),
 				'default' => 'yes',
 				'desc'    => __( 'Add schema.org markup for video', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
+				'id'          => 'description',
+				'type'        => 'textarea',
+				'name'        => __( 'Description', 'mihdan-lite-youtube-embed' ),
+				'desc'        => __( 'Default video description for microdata', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
