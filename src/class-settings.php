@@ -189,7 +189,7 @@ class Settings {
 			)
 		);
 
-		$this->wposa->add_section(
+		/*$this->wposa->add_section(
 			array(
 				'id'    => 'mlye_plugins',
 				'title' => __( 'Plugins', 'mihdan-lite-youtube-embed' ),
@@ -204,6 +204,6 @@ class Settings {
 				'name' => '',
 				'desc' => 1,
 			)
-		);
+		);*/
 	}
 }
