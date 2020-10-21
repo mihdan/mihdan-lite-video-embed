@@ -32,6 +32,9 @@ e.g.
 
 == Changelog ==
 
+= 1.4.8 (21.10.2020) =
+* Clear cache on plugin uninstall
+
 = 1.4.7 (01.08.2020) =
 * Added support for Gutenberg
 * Code refactoring
