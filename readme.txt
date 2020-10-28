@@ -32,6 +32,11 @@ e.g.
 
 == Changelog ==
 
+= 1.5.0 (28.10.2020) =
+* Added lozad.js for Lazy Load support
+* Added minify version of assets
+* Fixed bugs
+
 = 1.4.8 (21.10.2020) =
 * Clear cache on plugin uninstall
 
