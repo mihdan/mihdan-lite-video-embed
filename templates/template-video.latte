@@ -1,7 +1,12 @@
-<lite-youtube class="{$player_class}" videoid="{$video_id}" style="background-image: url(https://i.ytimg.com/vi/{$video_id}/{$preview_quality}.jpg);">
-	<div class="lty-playbtn"></div>
-</lite-youtube>
-
+{if $use_lazy_load}
+	<lite-youtube class="{$player_class} lite-youtube_lazy" videoid="{$video_id}" data-background-image="https://i.ytimg.com/vi/{$video_id}/{$preview_quality}.jpg">
+		<div class="lty-playbtn"></div>
+	</lite-youtube>
+{else}
+	<lite-youtube class="{$player_class}" videoid="{$video_id}" style="background-image: url(https://i.ytimg.com/vi/{$video_id}/{$preview_quality}.jpg);">
+		<div class="lty-playbtn"></div>
+	</lite-youtube>
+{/if}
 <div n:if="$use_microdata" style="display: none" itemprop="video" itemscope="" itemtype="https://schema.org/VideoObject">
 	<meta itemprop="description" content="{$description}">
 	<meta itemprop="duration" content="{$duration}">

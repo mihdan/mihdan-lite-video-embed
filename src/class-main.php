@@ -145,6 +145,7 @@ class Main {
 
 			$params = array(
 				'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
+				'use_lazy_load'   => ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ),
 				'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
 				'video_id'        => $video_id,
 				'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
@@ -190,9 +191,11 @@ class Main {
 	 * Enqueue frontend assets.
 	 */
 	public function enqueue_frontend_assets() {
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 		wp_enqueue_script(
 			$this->utils->get_plugin_slug(),
-			$this->utils->get_plugin_url() . '/frontend/js/lite-yt-embed.js',
+			$this->utils->get_plugin_url() . '/frontend/js/lite-yt-embed' . $suffix. '.js',
 			[],
 			$this->utils->get_plugin_version(),
 			true
@@ -200,10 +203,26 @@ class Main {
 
 		wp_enqueue_style(
 			$this->utils->get_plugin_slug(),
-			$this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed.css',
+			$this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed' . $suffix. '.css',
 			array(),
 			$this->utils->get_plugin_version()
 		);
+
+		// Lazy Load.
+		if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
+			wp_enqueue_script(
+				$this->utils->get_plugin_slug() . '-lozad',
+				$this->utils->get_plugin_url() . '/frontend/js/lozad' . $suffix. '.js',
+				[ $this->utils->get_plugin_slug() ],
+				$this->utils->get_plugin_version(),
+				true
+			);
+
+			// Lozad init.
+			$lozad = "const observer = lozad( '.lite-youtube_lazy', { threshold: 0.1, enableAutoReload: true }); observer.observe();";
+
+			wp_add_inline_script( $this->utils->get_plugin_slug() . '-lozad', $lozad );
+		}
 	}
 
 	/**
