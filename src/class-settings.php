@@ -22,23 +22,7 @@ class Settings {
 
 	public function __construct( WP_OSA $wposa ) {
 		$this->wposa = $wposa;
-
-		$this->add_requirements();
-		$this->setup_hooks();
 		$this->setup_fields();
-	}
-
-	public function add_requirements() {
-		require_once ABSPATH . 'wp-admin/includes/screen.php';
-		require_once ABSPATH . 'wp-admin/includes/template.php';
-		require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-		require_once ABSPATH . 'wp-admin/includes/class-wp-plugin-install-list-table.php';
-	}
-
-	public function setup_hooks() {
-		wp_enqueue_script('plugin-install');
-		add_thickbox();
-		wp_enqueue_script('updates');
 	}
 
 	public function setup_fields() {
