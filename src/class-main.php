@@ -52,6 +52,11 @@ class Main {
 	private $latte;
 
 	/**
+	 * YouTube preview URL template.
+	 */
+	const PREVIEW_URL = 'https://i.ytimg.com/vi/%s/%s.jpg';
+
+	/**
 	 * Main constructor.
 	 */
 	public function __construct() {
@@ -78,6 +83,18 @@ class Main {
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Get preview template.
+	 *
+	 * @param string $video_id Video ID.
+	 * @param string $quality Video preview quality.
+	 *
+	 * @return string
+	 */
+	public function get_preview_template( $video_id, $quality ) {
+		return sprintf( self::PREVIEW_URL, $video_id, $quality );
 	}
 
 	/**
@@ -146,7 +163,7 @@ class Main {
 			$params = array(
 				'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
 				'use_lazy_load'   => ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ),
-				'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'sddefault' ),
+				'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'auto' ),
 				'video_id'        => $video_id,
 				'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
 				'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
@@ -157,6 +174,7 @@ class Main {
 				'description'     => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
 				'name'            => $name,
 				'embed_url'       => $embed_url,
+				'preview_url'     => $this->get_preview_url( $video_id ),
 			);
 
 			return $this->latte->renderToString(
@@ -166,6 +184,31 @@ class Main {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Get video preview URL by video ID.
+	 *
+	 * @param string $video_id Video ID.
+	 *
+	 * @return string
+	 */
+	public function get_preview_url( $video_id ) {
+		$quality = $this->wposa->get_option( 'preview_quality', 'mlye_general', 'auto' );
+
+		if ( 'auto' === $quality ) {
+			foreach( array( 'maxresdefault', 'hqdefault', 'mqdefault', 'sddefault' ) as $size ) {
+				$response = wp_remote_head( $this->get_preview_template( $video_id, $size ) );
+
+				if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
+					return $this->get_preview_template( $video_id, $size );
+				}
+			}
+		} else {
+			return $this->get_preview_template( $video_id, $quality );
+		}
+
+		return $this->get_preview_template( $video_id, 'sddefault' );
 	}
 
 	/**

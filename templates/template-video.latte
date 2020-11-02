@@ -1,9 +1,9 @@
 {if $use_lazy_load}
-	<lite-youtube class="{$player_class} lite-youtube_lazy" videoid="{$video_id}" data-background-image="https://i.ytimg.com/vi/{$video_id}/{$preview_quality}.jpg">
+	<lite-youtube class="{$player_class} lite-youtube_lazy" videoid="{$video_id}" data-background-image="{$preview_url}">
 		<div class="lty-playbtn"></div>
 	</lite-youtube>
 {else}
-	<lite-youtube class="{$player_class}" videoid="{$video_id}" style="background-image: url(https://i.ytimg.com/vi/{$video_id}/{$preview_quality}.jpg);">
+	<lite-youtube class="{$player_class}" videoid="{$video_id}" style="background-image: url({$preview_url});">
 		<div class="lty-playbtn"></div>
 	</lite-youtube>
 {/if}
@@ -11,7 +11,7 @@
 	<meta itemprop="description" content="{$description}">
 	<meta itemprop="duration" content="{$duration}">
 	<link itemprop="url" href="{$url}">
-	<link itemprop="thumbnailUrl" href="https://i.ytimg.com/vi/{$video_id}/{$preview_quality}.jpg">
+	<link itemprop="thumbnailUrl" href="{$preview_url}">
 	<link itemprop="embedUrl" href="{$embed_url}">
 	<meta itemprop="name" content="{$name}">
 	<meta itemprop="uploadDate" content="{$upload_date}">
@@ -21,7 +21,7 @@
 			 itemprop="contentUrl"
 			 decoding="async"
 			 loading="lazy"
-			 src="https://i.ytimg.com/vi/{$video_id}/maxresdefault.jpg"
+			 src="{$preview_url}"
 			 srcset="https://i.ytimg.com/vi/{$video_id}/mqdefault.jpg 640w, https://i.ytimg.com/vi/{$video_id}/hqdefault.jpg 920w"
 			 sizes="(max-width: 640px) 100vw, 640px" />
 		<meta itemprop="width" content="{$player_width}">

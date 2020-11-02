@@ -32,6 +32,13 @@ e.g.
 
 == Changelog ==
 
+= 1.5.2 (02.11.2020) =
+* Added settings for auto get max preview size
+* Fixed bugs with microdata
+
+= 1.5.1 (29.10.2020) =
+* Fixed notices
+
 = 1.5.0 (28.10.2020) =
 * Added lozad.js for Lazy Load support
 * Added minify version of assets
