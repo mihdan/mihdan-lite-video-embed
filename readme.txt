@@ -3,7 +3,7 @@ Contributors: mihdan
 Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
-Tested up to: 5.4
+Tested up to: 5.6
 Stable tag: trunk
 Requires PHP: 5.6.20
 License: GPLv2 or later
@@ -31,6 +31,12 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.6.0 (02.02.2021) =
+* Added support for iframe version of YouTube embed
+
+= 1.5.3 (01.02.2021) =
+* Added support for WordPress 5.6
 
 = 1.5.2 (02.11.2020) =
 * Added settings for auto get max preview size
