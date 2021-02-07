@@ -7,6 +7,8 @@
 
 namespace Mihdan\LiteYouTubeEmbed;
 
+use WP_Plugin_Install_List_Table;
+
 /**
  * Class Settings.
  *
@@ -22,7 +24,39 @@ class Settings {
 
 	public function __construct( WP_OSA $wposa ) {
 		$this->wposa = $wposa;
+
+		$this->setup_hooks();
 		$this->setup_fields();
+	}
+
+	public function setup_hooks() {
+		add_filter( 'install_plugins_nonmenu_tabs', array( $this, 'install_plugins_nonmenu_tabs' ) );
+		add_filter( 'install_plugins_table_api_args_' . Utils::get_plugin_slug(), array( $this, 'install_plugins_table_api_args' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+	}
+
+	public function admin_enqueue_scripts() {
+		wp_enqueue_script( 'plugin_install' );
+		wp_enqueue_script( 'updates' );
+		add_thickbox();
+	}
+
+	public function install_plugins_nonmenu_tabs( $tabs ) {
+
+		$tabs[] = Utils::get_plugin_slug();
+
+		return $tabs;
+	}
+
+	public function install_plugins_table_api_args( $args ) {
+		global $paged;
+
+		return array(
+			'page'     => $paged,
+			'per_page' => 100,
+			'locale'   => get_user_locale(),
+			'search'   => 'mihdan',
+		);
 	}
 
 	public function setup_fields() {
@@ -103,6 +137,21 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_general',
 			array(
+				'id'      => 'iframe_support',
+				'type'    => 'select',
+				'name'    => __( 'Iframe Support', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					'yes' => __( 'Yes', 'mihdan-lite-youtube-embed' ),
+					'no'  => __( 'No', 'mihdan-lite-youtube-embed' ),
+				),
+				'default' => 'no',
+				'desc'    => __( 'Enable if you want to lazy-load YouTube iframe Embeds<br />(not recommended, use WordPress YouTube Embeds instead).', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
 				'id'      => 'preview_quality',
 				'type'    => 'select',
 				'name'    => __( 'Preview Quality', 'mihdan-lite-youtube-embed' ),
@@ -174,10 +223,11 @@ class Settings {
 			)
 		);
 
-		/*$this->wposa->add_section(
+		$this->wposa->add_section(
 			array(
 				'id'    => 'mlye_plugins',
 				'title' => __( 'Plugins', 'mihdan-lite-youtube-embed' ),
+				'desc'  => __( 'Другие плагины автора', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
@@ -187,8 +237,29 @@ class Settings {
 				'id'   => 'plugins',
 				'type' => 'html',
 				'name' => '',
-				'desc' => 1,
+				'desc' => function () {
+					$transient = Utils::get_plugin_slug() . '-plugins';
+					$cached    = get_transient( $transient );
+
+					if ( false !== $cached ) {
+						return $cached;
+					}
+
+					ob_start();
+					require_once ABSPATH . 'wp-admin/includes/class-wp-plugin-install-list-table.php';
+					$_POST['tab'] = Utils::get_plugin_slug();
+					$table = new WP_Plugin_Install_List_Table();
+					$table->prepare_items();
+
+
+					$table->display();
+
+					$content = ob_get_clean();
+					set_transient( $transient, $content, 1 * DAY_IN_SECONDS );
+
+					return $content;
+				},
 			)
-		);*/
+		);
 	}
 }
