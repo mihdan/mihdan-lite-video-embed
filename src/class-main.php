@@ -7,6 +7,8 @@
 
 namespace Mihdan\LiteYouTubeEmbed;
 
+use Elementor\Widgets_Manager;
+use Elementor\Plugin;
 use Latte\Engine;
 use wpdb;
 
@@ -80,9 +82,65 @@ class Main {
 		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 10, 3 );
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
 		add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 );
+		//add_filter( 'the_content', array( $this, 'parse_iframe' ) );
+
+		// Elementor support.
+		if ( did_action( 'elementor/loaded' ) ) {
+			add_action( 'elementor/init', array( $this, 'register_category' ) );
+			add_action( 'elementor/widgets/widgets_registered', array( $this, 'require_widgets' ) );
+		}
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Create new category for widget.
+	 */
+	public function register_category() {
+		Plugin::$instance->elements_manager->add_category(
+			'mihdan',
+			array(
+				'title' => 'Mihdan Widgets',
+				'icon'  => 'font',
+			)
+		);
+	}
+
+	/**
+	 * Register Widgets
+	 *
+	 * Register new Elementor widgets.
+	 *
+	 * @since 1.3
+	 * @access public
+	 *
+	 * @param Widgets_Manager $widgets_manager Widgets_Manager instance.
+	 */
+	public function require_widgets( Widgets_Manager $widgets_manager ) {
+		//$widgets_manager->register_widget_type( new Elementor() );
+	}
+
+	public function parse_iframe( $content ) {
+		global $wp_embed;
+
+		if ( is_admin() ) {
+			return $content;
+		}
+
+		if ( 'yes' !== $this->wposa->get_option( 'iframe_support', 'mlye_general', 'no' ) ) {
+			return $content;
+		}
+
+		/**
+		 * @link https://regexr.com/5hocf
+		 */
+		$pattern     = '#<p><iframe\s.*?src="(?:https?:)?\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})"(?:[^>]+)?><\/iframe><\/p>#i';
+		$replacement = '<lite-youtube class="lite-youtube_16x9" videoid="$1" style="background-image: url(ddd);"><div class="lty-playbtn"></div></lite-youtube>';
+
+		$content = $wp_embed->autoembed( preg_replace( $pattern, $replacement, $content ) );
+
+		return $content;
 	}
 
 	/**
@@ -216,7 +274,7 @@ class Main {
 	 */
 	public function enqueue_gutenberg_assets() {
 		wp_enqueue_style(
-			$this->utils->get_plugin_slug(),
+			Utils::get_plugin_slug(),
 			$this->utils->get_plugin_url() . '/admin/css/lite-yt-embed.css',
 			array(),
 			$this->utils->get_plugin_version()
@@ -237,7 +295,7 @@ class Main {
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
 		wp_enqueue_script(
-			$this->utils->get_plugin_slug(),
+			Utils::get_plugin_slug(),
 			$this->utils->get_plugin_url() . '/frontend/js/lite-yt-embed' . $suffix. '.js',
 			[],
 			$this->utils->get_plugin_version(),
@@ -245,7 +303,7 @@ class Main {
 		);
 
 		wp_enqueue_style(
-			$this->utils->get_plugin_slug(),
+			Utils::get_plugin_slug(),
 			$this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed' . $suffix. '.css',
 			array(),
 			$this->utils->get_plugin_version()
@@ -254,9 +312,9 @@ class Main {
 		// Lazy Load.
 		if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
 			wp_enqueue_script(
-				$this->utils->get_plugin_slug() . '-lozad',
+				Utils::get_plugin_slug() . '-lozad',
 				$this->utils->get_plugin_url() . '/frontend/js/lozad' . $suffix. '.js',
-				[ $this->utils->get_plugin_slug() ],
+				[ Utils::get_plugin_slug() ],
 				$this->utils->get_plugin_version(),
 				true
 			);
@@ -264,7 +322,7 @@ class Main {
 			// Lozad init.
 			$lozad = "const observer = lozad( '.lite-youtube_lazy', { threshold: 0.1, enableAutoReload: true }); observer.observe();";
 
-			wp_add_inline_script( $this->utils->get_plugin_slug() . '-lozad', $lozad );
+			wp_add_inline_script( Utils::get_plugin_slug() . '-lozad', $lozad );
 		}
 	}
 
