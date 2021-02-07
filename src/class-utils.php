@@ -55,7 +55,7 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_slug() {
+	public static function get_plugin_slug() {
 		return MIHDAN_LITE_YOUTUBE_EMBED_SLUG;
 	}
 
