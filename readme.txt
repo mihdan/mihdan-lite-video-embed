@@ -34,6 +34,7 @@ e.g.
 
 = 1.6.0 (02.02.2021) =
 * Added support for iframe version of YouTube embed
+* Added support for Elementor page builder
 
 = 1.5.3 (01.02.2021) =
 * Added support for WordPress 5.6
