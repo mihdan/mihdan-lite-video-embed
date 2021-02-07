@@ -405,7 +405,12 @@ if ( ! class_exists( 'WP_OSA' ) ) :
 		 */
 		public function get_field_description( $args ) {
 			if ( ! empty( $args['desc'] ) ) {
-				$desc = sprintf( '<p class="description">%s</p>', $args['desc'] );
+				$desc = sprintf(
+				        '<p class="description">%s</p>',
+                        is_callable( $args['desc'] )
+                            ? call_user_func( $args['desc'] )
+                            : $args['desc']
+                );
 			} else {
 				$desc = '';
 			}
