@@ -737,7 +737,7 @@ if ( ! class_exists( 'WP_OSA' ) ) :
 				$this->utils->get_plugin_title(),
 				$this->utils->get_plugin_title(),
 				'manage_options',
-				$this->utils->get_plugin_slug(),
+				Utils::get_plugin_slug(),
 				array( $this, 'plugin_page' )
 			);
 		}
@@ -930,6 +930,10 @@ if ( ! class_exists( 'WP_OSA' ) ) :
 				.group .form-table input.color-picker {
 					max-width: 100px;
 				}
+                #mlye_plugins .form-table > tr > th,
+                #mlye_plugins .form-table > tbody > tr > th {
+                    display: none;
+                }
 			</style>
 			<?php
 		}
