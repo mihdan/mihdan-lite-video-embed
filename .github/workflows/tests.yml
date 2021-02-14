@@ -8,10 +8,19 @@ jobs:
     name: New tag
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - with:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install composer requirements
+        run: composer install --no-dev --prefer-dist --no-progress --no-suggest
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
           node-version: ${{ matrix.node-version }}
-      - run: composer install --no-dev --prefer-dist --no-progress --no-suggest
-      - run: npm ci
-      - run: gulp default
+
+      - name: Init Node
+        run: npm ci
+
+      - name: Gulp
+        run: gulp default
