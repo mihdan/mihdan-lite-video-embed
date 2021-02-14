@@ -26,5 +26,6 @@ define( 'MIHDAN_LITE_YOUTUBE_EMBED_URL', untrailingslashit( plugin_dir_url( MIHD
 require_once MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/vendor/autoload.php';
 
 $mihdan_lite_youtube_embed = new Main();
+$mihdan_lite_youtube_embed->setup_hooks();
 
 // eol.

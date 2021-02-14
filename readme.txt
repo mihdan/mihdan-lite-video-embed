@@ -35,6 +35,12 @@ e.g.
 = 1.6.0 (02.02.2021) =
 * Added support for iframe version of YouTube embed
 * Added support for Elementor page builder
+* Added video title if no API key is specified
+* Added option for setting HTTP requests timeout
+* Added video title on the frontend
+* Fixed bug with preview metadata
+* Fixed bug with preview lazy load
+* Fixed bug with preview position
 
 = 1.5.3 (01.02.2021) =
 * Added support for WordPress 5.6
