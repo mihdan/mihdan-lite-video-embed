@@ -59,6 +59,35 @@ class Main {
 	const PREVIEW_URL = 'https://i.ytimg.com/vi/%s/%s.jpg';
 
 	/**
+	 * Content details URL.
+	 */
+	const CONTENT_DETAILS_URL = 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet';
+
+	/**
+	 * Simple content URL.
+	 */
+	const SIMPLE_CONTENT_URL = 'https://www.youtube.com/oembed?url=youtube.com/watch?v=%s';
+
+	/**
+	 * Validate key URL.
+	 */
+	const VALIDATE_KEY_URL = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=YouTube+Data+API&type=video&key=%s';
+
+	/**
+	 * HTTP timeout.
+	 *
+	 * @var int
+	 */
+	private $timeout;
+
+	/**
+	 * YouTube API key.
+	 *
+	 * @var string
+	 */
+	private $api_key;
+
+	/**
 	 * Main constructor.
 	 */
 	public function __construct() {
@@ -67,14 +96,15 @@ class Main {
 		$this->wposa    = new WP_OSA( $this->utils );
 		$this->settings = new Settings( $this->wposa );
 		$this->latte    = new Engine();
-
-		$this->setup_hooks();
+		$this->api_key  = $this->wposa->get_option( 'api_key', 'mlye_general' );
+		$this->timeout  = $this->wposa->get_option( 'timeout', 'mlye_general' );
 	}
 
 	/**
 	 * Setup hooks.
 	 */
 	public function setup_hooks() {
+		add_filter( 'oembed_remote_get_args', array( $this, 'oembed_remote_set_timeout' ), 10, 2 );
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
@@ -92,6 +122,24 @@ class Main {
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Oembed remote get set request timeout.
+	 *
+	 * @param array  $args Array of default arguments.
+	 * @param string $url  Provider URL with args.
+	 *
+	 * @return array
+	 */
+	public function oembed_remote_set_timeout( $args, $url ) {
+		if ( false === strpos( $url, 'youtube' ) ) {
+			return $args;
+		}
+
+		$args[ 'timeout' ] = $this->get_timeout();
+
+		return $args;
 	}
 
 	/**
@@ -172,7 +220,7 @@ class Main {
 			preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
 
 			if ( ! $matches ) {
-				return $return;
+				//return $return;
 			}
 
 			$post = get_post();
@@ -193,25 +241,31 @@ class Main {
 				? $post->post_excerpt
 				: $this->wposa->get_option( 'description', 'mlye_general' );
 
-			$api_key     = $this->wposa->get_option( 'api_key', 'mlye_general' );
+			$api_key     = $this->get_api_key();
 
 			if ( $api_key ) {
-				$request = sprintf( 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=contentDetails,snippet', $video_id, $api_key );
-				$request = wp_remote_get( $request );
+				$request = sprintf( self::CONTENT_DETAILS_URL, $video_id, $api_key );
+				$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
+				$body = wp_remote_retrieve_body( $request );
 
-				if ( ! is_wp_error( $request ) ) {
-					$body = wp_remote_retrieve_body( $request );
+				if ( $body ) {
+					$body            = json_decode( $body, false );
+					$content_details = $body->items[0]->contentDetails;
+					$snippet         = $body->items[0]->snippet;
 
-					if ( $body ) {
-						$body            = json_decode( $body );
-						$content_details = $body->items[0]->contentDetails;
-						$snippet         = $body->items[0]->snippet;
+					$duration    = $content_details->duration;
+					$name        = $snippet->title;
+					$description = $snippet->description;
+					$upload_date = $snippet->publishedAt;
+				}
+			} else {
+				$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
+				$request = wp_remote_get( $url, array( 'timeout' => $this->get_timeout() ) );
+				$body    = wp_remote_retrieve_body( $request );
 
-						$duration    = $content_details->duration;
-						$name        = $snippet->title;
-						$description = $snippet->description;
-						$upload_date = $snippet->publishedAt;
-					}
+				if ( $body ) {
+					$body = json_decode( $body, false );
+					$name = $body->title;
 				}
 			}
 
@@ -256,7 +310,7 @@ class Main {
 
 		if ( 'auto' === $quality ) {
 			foreach( array( 'maxresdefault', 'hqdefault', 'mqdefault', 'sddefault' ) as $size ) {
-				$response = wp_remote_head( $this->get_preview_template( $video_id, $size ) );
+				$response = wp_remote_head( $this->get_preview_template( $video_id, $size ), array( 'timeout' => $this->get_timeout() ) );
 
 				if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
 					return $this->get_preview_template( $video_id, $size );
@@ -292,11 +346,9 @@ class Main {
 	 * Enqueue frontend assets.
 	 */
 	public function enqueue_frontend_assets() {
-		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-
 		wp_enqueue_script(
 			Utils::get_plugin_slug(),
-			$this->utils->get_plugin_url() . '/frontend/js/lite-yt-embed' . $suffix. '.js',
+			$this->utils->get_plugin_url() . '/assets/dist/js/frontend.js',
 			[],
 			$this->utils->get_plugin_version(),
 			true
@@ -304,13 +356,13 @@ class Main {
 
 		wp_enqueue_style(
 			Utils::get_plugin_slug(),
-			$this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed' . $suffix. '.css',
+			$this->utils->get_plugin_url() . '/assets/dist/css/frontend.css',
 			array(),
 			$this->utils->get_plugin_version()
 		);
 
 		// Lazy Load.
-		if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
+		/*if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
 			wp_enqueue_script(
 				Utils::get_plugin_slug() . '-lozad',
 				$this->utils->get_plugin_url() . '/frontend/js/lozad' . $suffix. '.js',
@@ -323,7 +375,7 @@ class Main {
 			$lozad = "const observer = lozad( '.lite-youtube_lazy', { threshold: 0.1, enableAutoReload: true }); observer.observe();";
 
 			wp_add_inline_script( Utils::get_plugin_slug() . '-lozad', $lozad );
-		}
+		}*/
 	}
 
 	/**
@@ -347,34 +399,64 @@ class Main {
 	}
 
 	/**
+	 * Get API key.
+	 *
+	 * @return string
+	 */
+	public function get_api_key() {
+		return $this->api_key;
+	}
+
+	/**
+	 * Get HTTP timeout.
+	 *
+	 * @return string
+	 */
+	public function get_timeout() {
+		return $this->timeout;
+	}
+
+	/**
 	 * Validate API key.
 	 *
 	 * @param string $api_key API key.
 	 *
 	 * @link https://stackoverflow.com/questions/21096602/using-youtube-v3-api-key/21117446#21117446
-	 * @return boolean
+	 * @return array
 	 */
 	public function validate_api_key( $api_key ) {
-		$request = sprintf( 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=YouTube+Data+API&type=video&key=%s', $api_key );
-		$request = wp_remote_get( $request );
+		$request = sprintf( self::VALIDATE_KEY_URL, $api_key );
+		$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
 
 		if ( is_wp_error( $request ) ) {
-			return false;
+			return array(
+				'success' => false,
+				'data'    => $request->get_error_message(),
+			);
 		}
 
 		$body = wp_remote_retrieve_body( $request );
 
 		if ( ! $body ) {
-			return false;
+			return array(
+				'success' => false,
+				'data'    => __( 'API key is invalid: Response is empty', 'mihdan-lite-youtube-embed' ),
+			);
 		}
 
-		$body = json_decode( $body );
+		$body = json_decode( $body, true );
 
-		if ( $body->error ) {
-			return false;
+		if ( ! empty( $body['error'] ) ) {
+			return array(
+				'success' => false,
+				'data'    => $body['error']['message'],
+			);
 		}
 
-		return true;
+		return array(
+			'success' => true,
+			'data'    => __( 'API key is valid.', 'mihdan-lite-youtube-embed' ),
+		);
 	}
 
 	/**
@@ -387,10 +469,20 @@ class Main {
 	 */
 	public function maybe_validate_api_key( $value, $old_value ) {
 
-		if ( $this->validate_api_key( $value ['api_key'] ) ) {
-			add_settings_error( 'general', 'api_key_valid', __( 'API key is valid.' ), 'success' );
+		if ( empty( $value['api_key'] ) ) {
+			return $value;
+		}
+
+		if ( $value['api_key'] === $this->get_api_key() ) {
+			return $value;
+		}
+
+		$response = $this->validate_api_key( $value['api_key'] );
+
+		if ( true === $response['success'] ) {
+			add_settings_error( 'general', 'api_key_valid', $response['data'], 'success' );
 		} else {
-			add_settings_error( 'general', 'api_key_invalid', __( 'API key is invalid.' ), 'error' );
+			add_settings_error( 'general', 'api_key_invalid', $response['data'], 'error' );
 		}
 
 		return $value;

@@ -1,0 +1,34 @@
+{
+  "name": "mihdan-lite-youtube-embed",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7",
+    "gulp-concat": "^2.6",
+    "gulp-livereload": "^4",
+    "gulp-rename": "^1.4",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^2.6",
+    "gulp-uglify-es": "^2"
+  },
+  "browserslist": [
+    "> 1%",
+    "ie >= 10",
+    "edge >= 15",
+    "ie_mob >= 10",
+    "ff >= 45",
+    "chrome >= 45",
+    "safari >= 7",
+    "opera >= 23",
+    "ios >= 7",
+    "android >= 4",
+    "bb >= 10"
+  ],
+  "author": "Mikhail Kobzarev",
+  "license": "ISC",
+  "description": "mihdan-lite-youtube-embed"
+}

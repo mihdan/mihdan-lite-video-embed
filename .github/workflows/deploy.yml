@@ -8,11 +8,12 @@ jobs:
     name: New tag
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: composer install --no-dev --prefer-dist --no-progress --no-suggest
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - with:
+          node-version: ${{ matrix.node-version }}
+      - run: composer install --no-dev --prefer-dist --no-progress --no-suggest
+      - run: npm ci
 
       - name: WordPress plugin deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
