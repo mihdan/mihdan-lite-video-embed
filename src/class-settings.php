@@ -55,7 +55,7 @@ class Settings {
 			'page'     => $paged,
 			'per_page' => 100,
 			'locale'   => get_user_locale(),
-			'search'   => 'mihdan',
+			'author'   => 'mihdan',
 		);
 	}
 
@@ -76,6 +76,25 @@ class Settings {
 				'name'        => __( 'API Key', 'mihdan-lite-youtube-embed' ),
 				'placeholder' => 'AIzaSyDe12JAR7DaIzUSGFIfiMuPPIOf1YMaKr4',
 				'desc'        => __( 'Plugin uses YouTube\'s API to fetch information on each video. <br />For your site to use that API, you will have to <a href="https://console.developers.google.com/apis/library" target="_blank">register</a> your site as a new application, <br />enable the YouTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
+				'id'      => 'timeout',
+				'type'    => 'select',
+				'name'    => __( 'Timeout', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					5  => 5,
+					10 => 10,
+					15 => 15,
+					20 => 20,
+					25 => 25,
+					30 => 30,
+				),
+				'default' => 5,
+				'desc'    => __( 'Timeout for HTTP requests', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
