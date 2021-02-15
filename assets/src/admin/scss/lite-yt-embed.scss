@@ -1,5 +1,8 @@
+/**
+ * @link https://www.youtube.com/about/brand-resources/#logos-icons-colors
+ */
 .block-editor-page .wp-block-embed .wp-block-embed__wrapper {
-    background-color: #d2d2d2;
+    background-color: #282828;
     cursor: pointer;
 }
 .block-editor-page .wp-block-embed .wp-block-embed__wrapper:before {
@@ -25,9 +28,5 @@
     filter: none;
 }
 .block-editor-page .wp-block-embed .wp-block-embed__wrapper iframe {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    top: 0;
-    height: 100%;
+    display: none;
 }

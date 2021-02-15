@@ -19,8 +19,12 @@ const files = {
         watch: ['assets/src/admin/scss/*.scss']
     },
     frontend_javascript: {
-       src: ['assets/src/frontend/js/*.js'],
-       watch: ['assets/src/frontend/js/*.js']
+       src: ['assets/src/frontend/js/lite-yt-embed.js'],
+       watch: ['assets/src/frontend/js/lite-yt-embed.js']
+    },
+    frontend_javascript_full: {
+        src: ['assets/src/frontend/js/*.js'],
+        watch: ['assets/src/frontend/js/*.js']
     },
     html: {
         src: ['*.php'],
@@ -58,6 +62,14 @@ function frontendJavaScriptTask() {
         .pipe(livereload());
 }
 
+function frontendJavaScriptFullTask() {
+    return src(files.frontend_javascript_full.src)
+        .pipe(concat('frontend-full.js'))
+        .pipe(uglify())
+        .pipe(dest('assets/dist/js'))
+        .pipe(livereload());
+}
+
 function htmlTask() {
     return src(files.html.src)
         .pipe(livereload());
@@ -68,6 +80,7 @@ function watchTask() {
     watch(files.frontend_styles.watch, parallel(frontendStylesTask));
     watch(files.admin_styles.watch, parallel(adminStylesTask));
     watch(files.frontend_javascript.watch, parallel(frontendJavaScriptTask));
+    watch(files.frontend_javascript_full.watch, parallel(frontendJavaScriptFullTask));
     watch(files.html.watch, parallel(htmlTask));
 }
 
@@ -77,7 +90,8 @@ exports.styles = series(
 );
 
 exports.js = series(
-    frontendJavaScriptTask
+    frontendJavaScriptTask,
+    frontendJavaScriptFullTask
 );
 
 exports.html = series(
@@ -92,5 +106,6 @@ exports.default = series(
     frontendStylesTask,
     adminStylesTask,
     frontendJavaScriptTask,
+    frontendJavaScriptFullTask,
     htmlTask
 );

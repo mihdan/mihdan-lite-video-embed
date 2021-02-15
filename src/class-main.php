@@ -329,9 +329,10 @@ class Main {
 	public function enqueue_gutenberg_assets() {
 		wp_enqueue_style(
 			Utils::get_plugin_slug(),
-			$this->utils->get_plugin_url() . '/admin/css/lite-yt-embed.css',
-			array(),
-			$this->utils->get_plugin_version()
+			$this->utils->get_plugin_url() . '/assets/dist/css/admin.css?g',
+			array( 'wp-edit-blocks' ),
+			//$this->utils->get_plugin_version()
+			time()
 		);
 	}
 
@@ -339,20 +340,13 @@ class Main {
 	 * Enqueue tinymce assets.
 	 */
 	public function enqueue_tinymce_assets() {
-		add_editor_style( $this->utils->get_plugin_url() . '/frontend/css/lite-yt-embed.css' );
+		add_editor_style( $this->utils->get_plugin_url() . '/assets/dist/css/admin.css?t' );
 	}
 
 	/**
 	 * Enqueue frontend assets.
 	 */
 	public function enqueue_frontend_assets() {
-		wp_enqueue_script(
-			Utils::get_plugin_slug(),
-			$this->utils->get_plugin_url() . '/assets/dist/js/frontend.js',
-			[],
-			$this->utils->get_plugin_version(),
-			true
-		);
 
 		wp_enqueue_style(
 			Utils::get_plugin_slug(),
@@ -362,11 +356,11 @@ class Main {
 		);
 
 		// Lazy Load.
-		/*if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
+		if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
 			wp_enqueue_script(
-				Utils::get_plugin_slug() . '-lozad',
-				$this->utils->get_plugin_url() . '/frontend/js/lozad' . $suffix. '.js',
-				[ Utils::get_plugin_slug() ],
+				Utils::get_plugin_slug(),
+				$this->utils->get_plugin_url() . '/assets/dist/js/frontend-full.js',
+				[],
 				$this->utils->get_plugin_version(),
 				true
 			);
@@ -374,8 +368,16 @@ class Main {
 			// Lozad init.
 			$lozad = "const observer = lozad( '.lite-youtube_lazy', { threshold: 0.1, enableAutoReload: true }); observer.observe();";
 
-			wp_add_inline_script( Utils::get_plugin_slug() . '-lozad', $lozad );
-		}*/
+			wp_add_inline_script( Utils::get_plugin_slug(), $lozad );
+		} else {
+			wp_enqueue_script(
+				Utils::get_plugin_slug(),
+				$this->utils->get_plugin_url() . '/assets/dist/js/frontend.js',
+				[],
+				$this->utils->get_plugin_version(),
+				true
+			);
+		}
 	}
 
 	/**
