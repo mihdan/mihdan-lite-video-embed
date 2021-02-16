@@ -122,7 +122,18 @@ lite-youtube.lyt-activated > .lty-playbtn {
     pointer-events: none;
 }
 
-lite-youtube > .lite-youtube__preview {
+lite-youtube .lite-youtube__preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    margin: 0;
+    padding: 0;
+}
+
+lite-youtube .lite-youtube__image {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -135,7 +146,7 @@ lite-youtube > .lite-youtube__preview {
     object-position: center;
 }
 
-lite-youtube > .lite-youtube__name {
+lite-youtube .lite-youtube__name {
     position: absolute;
     z-index: 12;
     left: 12px;
@@ -146,4 +157,5 @@ lite-youtube > .lite-youtube__name {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-size: 0.8em;
 }

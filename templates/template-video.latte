@@ -1,23 +1,27 @@
 {if $use_lazy_load}
 	<lite-youtube class="{$player_class}" videoid="{$video_id}">
-		<div class="lty-playbtn"></div>
-		<img src="{$preview_url}"
-			 srcset="https://i.ytimg.com/vi/{$video_id}/mqdefault.jpg 640w, https://i.ytimg.com/vi/{$video_id}/hqdefault.jpg 920w"
-			 sizes="(max-width: 640px) 100vw, 640px"
-			 width="{$player_width}"
-			 height="{$player_height}"
-			 class="lite-youtube__preview lite-youtube_lazy"
-			 alt="{$name}" />
+		<div class="lite-youtube__button lty-playbtn"></div>
+		<p class="lite-youtube__preview">
+			<img src="{$preview_url}"
+				 srcset="https://i.ytimg.com/vi/{$video_id}/mqdefault.jpg 640w, https://i.ytimg.com/vi/{$video_id}/hqdefault.jpg 920w"
+				 sizes="(max-width: 640px) 100vw, 640px"
+				 width="{$player_width}"
+				 height="{$player_height}"
+				 class="lite-youtube__image lite-youtube_lazy"
+				 alt="{$name}" />
+		</p>
 		<span class="lite-youtube__name">{$name}</span>
 	</lite-youtube>
 {else}
 	<lite-youtube class="{$player_class}" videoid="{$video_id}">
-		<div class="lty-playbtn"></div>
-		<img src="{$preview_url}"
-			 width="{$player_width}"
-			 height="{$player_height}"
-			 class="lite-youtube__preview"
-			 alt="{$name}" />
+		<div class="lite-youtube__button lty-playbtn"></div>
+		<p class="lite-youtube__preview">
+			<img src="{$preview_url}"
+				 width="{$player_width}"
+				 height="{$player_height}"
+				 class="lite-youtube__image"
+				 alt="{$name}" />
+		</p>
 		<span class="lite-youtube__name">{$name}</span>
 	</lite-youtube>
 {/if}

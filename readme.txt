@@ -32,6 +32,11 @@ e.g.
 
 == Changelog ==
 
+= 1.6.1 (16.02.2021) =
+* Remove OceanWP wrapper for YouTube videos.
+* Fixed bug with `[embed]` shortcode
+* Fixed bug with `wpautop`
+
 = 1.6.0 (02.02.2021) =
 * Added support for iframe version of YouTube embed
 * Added support for Elementor page builder

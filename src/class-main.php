@@ -109,10 +109,9 @@ class Main {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
-		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 10, 3 );
+		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 100, 3 );
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
 		add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 );
-		//add_filter( 'the_content', array( $this, 'parse_iframe' ) );
 
 		// Elementor support.
 		if ( did_action( 'elementor/loaded' ) ) {
@@ -122,6 +121,27 @@ class Main {
 
 		register_activation_hook( $this->utils->get_plugin_file(), array( $this, 'on_activate' ) );
 		register_deactivation_hook( $this->utils->get_plugin_file(), array( $this, 'on_deactivate' ) );
+
+		/**
+		 * Remove OceanWP wrapper for YouTube videos.
+		 */
+		add_filter(
+			'ocean_oembed_responsive_hosts',
+			function ( $hosts ) {
+
+				$allowed = array(
+					'youtube.com',
+					'#http://((m|www)\.)?youtube\.com/watch.*#i',
+					'#https://((m|www)\.)?youtube\.com/watch.*#i',
+					'#http://((m|www)\.)?youtube\.com/playlist.*#i',
+					'#https://((m|www)\.)?youtube\.com/playlist.*#i',
+					'#http://youtu\.be/.*#i',
+					'#https://youtu\.be/.*#i',
+				);
+
+				return array_diff( $hosts, $allowed );
+			}
+		);
 	}
 
 	/**
@@ -289,10 +309,14 @@ class Main {
 				'preview_url'     => $this->get_preview_url( $video_id ),
 			);
 
-			return $this->latte->renderToString(
+			$render = $this->latte->renderToString(
 				$this->utils->get_templates_path() . '/template-video.latte',
 				$params
 			);
+
+			$render = str_replace( array( "\n", "\t", "\r" ), '', $render );
+
+			return $render;
 		}
 
 		return $return;
