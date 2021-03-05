@@ -32,6 +32,10 @@ e.g.
 
 == Changelog ==
 
+= 1.6.2 (05.03.2021) =
+* Added support for WPShop themes
+* Wrapped player with a custom tag to prevent many bugs
+
 = 1.6.1 (16.02.2021) =
 * Remove OceanWP wrapper for YouTube videos.
 * Fixed bug with `[embed]` shortcode

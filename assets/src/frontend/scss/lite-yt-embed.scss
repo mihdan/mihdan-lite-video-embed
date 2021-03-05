@@ -4,12 +4,15 @@
 lite-youtube {
     background-color: #000;
     position: relative;
-    display: block;
-    contain: content;
-    background-position: center center;
-    background-size: cover;
     cursor: pointer;
     max-width: inherit !important;
+}
+
+lite-youtube,
+lite-youtube__button,
+lite-youtube__preview,
+lite-youtube__name {
+    display: block;
 }
 
 lite-youtube.lite-youtube_420x236 {
