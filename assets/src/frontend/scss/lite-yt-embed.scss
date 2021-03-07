@@ -134,6 +134,7 @@ lite-youtube .lite-youtube__preview {
     z-index: 9;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 lite-youtube .lite-youtube__image {
@@ -141,17 +142,16 @@ lite-youtube .lite-youtube__image {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-
-    /*right: 0;*/
-    /*bottom: 0;*/
     z-index: 10;
     object-fit: cover;
     object-position: center;
+    max-width: 100%;
+    height: auto;
 }
 
 lite-youtube .lite-youtube__name {
     position: absolute;
-    z-index: 12;
+    z-index: 12; 
     left: 12px;
     top: 0;
     right: 12px;
@@ -161,4 +161,15 @@ lite-youtube .lite-youtube__name {
     text-overflow: ellipsis;
     overflow: hidden;
     font-size: 0.8em;
+}
+
+/**
+ * Fix bug with Gutenberg Block.
+ */
+.wp-block-embed.is-provider-youtube {
+    .wp-block-embed__wrapper {
+        &:before {
+            display: none;
+        }
+    }
 }

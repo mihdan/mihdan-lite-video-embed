@@ -32,6 +32,9 @@ e.g.
 
 == Changelog ==
 
+= 1.6.3 (07.03.2021) =
+* Fixed bug with a responsive video cover
+
 = 1.6.2 (05.03.2021) =
 * Added support for WPShop themes
 * Wrapped player with a custom tag to prevent many bugs
