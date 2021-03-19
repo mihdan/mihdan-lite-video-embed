@@ -1,11 +1,25 @@
 {
+    "name": "mihdan/lite-youtube-embed",
+    "description": "A faster youtube embed. Renders faster than a sneeze.",
+    "keywords": ["mihdan", "lite", "youtube", "embed", "fast", "performace"],
+    "homepage": "https://github.com/mihdan/mihdan-lite-youtube-embed",
+    "authors": [
+        {
+            "name": "Mikhail Kobzarev",
+            "homepage": "https://www.kobzarev.com/"
+        }
+    ],
     "require": {
         "latte/latte": "2.4",
         "ext-json": "*"
+    }
+    ,
+    "require-dev": {
+        "roave/security-advisories": "dev-master"
     },
     "autoload": {
         "classmap": [
-            "src"
+            "src/"
         ]
     }
 }
