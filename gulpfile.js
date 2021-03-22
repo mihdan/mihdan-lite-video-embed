@@ -22,9 +22,9 @@ const files = {
        src: ['assets/src/frontend/js/lite-yt-embed.js'],
        watch: ['assets/src/frontend/js/lite-yt-embed.js']
     },
-    frontend_javascript_full: {
-        src: ['assets/src/frontend/js/*.js'],
-        watch: ['assets/src/frontend/js/*.js']
+    frontend_lozad: {
+        src: ['assets/src/frontend/js/lozad.js'],
+        watch: ['assets/src/frontend/js/lozad.js']
     },
     html: {
         src: ['*.php'],
@@ -62,9 +62,9 @@ function frontendJavaScriptTask() {
         .pipe(livereload());
 }
 
-function frontendJavaScriptFullTask() {
-    return src(files.frontend_javascript_full.src)
-        .pipe(concat('frontend-full.js'))
+function frontendJavaScriptLozadTask() {
+    return src(files.frontend_lozad.src)
+        .pipe(concat('lozad.js'))
         .pipe(uglify())
         .pipe(dest('assets/dist/js'))
         .pipe(livereload());
@@ -80,7 +80,7 @@ function watchTask() {
     watch(files.frontend_styles.watch, parallel(frontendStylesTask));
     watch(files.admin_styles.watch, parallel(adminStylesTask));
     watch(files.frontend_javascript.watch, parallel(frontendJavaScriptTask));
-    watch(files.frontend_javascript_full.watch, parallel(frontendJavaScriptFullTask));
+    watch(files.frontend_lozad.watch, parallel(frontendJavaScriptLozadTask));
     watch(files.html.watch, parallel(htmlTask));
 }
 
@@ -91,7 +91,7 @@ exports.styles = series(
 
 exports.js = series(
     frontendJavaScriptTask,
-    frontendJavaScriptFullTask
+    frontendJavaScriptLozadTask
 );
 
 exports.html = series(
@@ -106,6 +106,6 @@ exports.default = series(
     frontendStylesTask,
     adminStylesTask,
     frontendJavaScriptTask,
-    frontendJavaScriptFullTask,
+    frontendJavaScriptLozadTask,
     htmlTask
 );

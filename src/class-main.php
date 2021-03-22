@@ -381,28 +381,28 @@ class Main {
 			$this->utils->get_plugin_version()
 		);
 
+		wp_enqueue_script(
+			Utils::get_plugin_slug(),
+			$this->utils->get_plugin_url() . '/assets/dist/js/frontend.js',
+			[],
+			$this->utils->get_plugin_version(),
+			true
+		);
+
 		// Lazy Load.
-		if ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
+		if ( ! wp_script_is( 'mihdan-lozad' ) && 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ) {
 			wp_enqueue_script(
-				Utils::get_plugin_slug(),
-				$this->utils->get_plugin_url() . '/assets/dist/js/frontend-full.js',
+				'mihdan-lozad',
+				$this->utils->get_plugin_url() . '/assets/dist/js/lozad.js',
 				[],
 				$this->utils->get_plugin_version(),
 				true
 			);
 
 			// Lozad init.
-			$lozad = "const observer = lozad( '.lite-youtube_lazy', { threshold: 0.1, enableAutoReload: true }); observer.observe();";
+			$lozad = "const observer = lozad( '.mihdan-lozad', { threshold: 0.1, enableAutoReload: true }); observer.observe();";
 
-			wp_add_inline_script( Utils::get_plugin_slug(), $lozad );
-		} else {
-			wp_enqueue_script(
-				Utils::get_plugin_slug(),
-				$this->utils->get_plugin_url() . '/assets/dist/js/frontend.js',
-				[],
-				$this->utils->get_plugin_version(),
-				true
-			);
+			wp_add_inline_script( 'mihdan-lozad', $lozad );
 		}
 	}
 
