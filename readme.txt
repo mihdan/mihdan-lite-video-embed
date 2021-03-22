@@ -32,6 +32,12 @@ e.g.
 
 == Changelog ==
 
+= 1.6.4 (20.03.2021) =
+* Added support for True Image & Lazy Load
+* Added the ability to pass parameters to the YouTube player
+* Fixed bug with duplicate Lozad library
+* Fixed bug with a prev/next page embedding in Gutenberg Editor
+
 = 1.6.3 (07.03.2021) =
 * Fixed bug with a responsive video cover
 
