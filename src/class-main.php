@@ -236,90 +236,92 @@ class Main {
 	 * @return string
 	 */
 	public function oembed_html( $return, $data, $url ) {
-		if ( 'YouTube' === $data->provider_name ) {
-			preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
+		if ( 'YouTube' !== $data->provider_name ) {
+			return $return;
+		}
+		preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
 
-			if ( ! $matches ) {
-				//return $return;
-			}
-
-			$post = get_post();
-
-			$video_id  = $matches[2];
-			$embed_url = $matches[1];
-
-			$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
-
-			// Get duration from API.
-			$duration    = 'T00H10M00S';
-			$upload_date = get_post_time( 'c', false, $post, false );
-			$name        = ( ! empty( $data->title ) )
-				? $data->title
-				: $post->post_title;
-
-			$description = ( ! empty( $post->post_excerpt ) )
-				? $post->post_excerpt
-				: $this->wposa->get_option( 'description', 'mlye_general' );
-
-			$api_key     = $this->get_api_key();
-
-			if ( $api_key ) {
-				$request = sprintf( self::CONTENT_DETAILS_URL, $video_id, $api_key );
-				$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
-				$body = wp_remote_retrieve_body( $request );
-
-				if ( $body ) {
-					$body            = json_decode( $body, false );
-					$content_details = $body->items[0]->contentDetails;
-					$snippet         = $body->items[0]->snippet;
-
-					$duration    = $content_details->duration;
-					$name        = $snippet->title;
-					$description = $snippet->description;
-					$upload_date = $snippet->publishedAt;
-				}
-			} else {
-				$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
-				$request = wp_remote_get( $url, array( 'timeout' => $this->get_timeout() ) );
-				$body    = wp_remote_retrieve_body( $request );
-
-				if ( $body ) {
-					$body = json_decode( $body, false );
-					$name = $body->title;
-				}
-			}
-
-			$description = str_replace( PHP_EOL, ' ', $description );
-			$description = wp_strip_all_tags( $description );
-
-			$params = array(
-				'use_microdata'   => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
-				'use_lazy_load'   => ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ),
-				'preview_quality' => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'auto' ),
-				'video_id'        => $video_id,
-				'player_width'    => in_array( $player_size[0], array( '16', '4' ) ) ? 1280 : $player_size[0],
-				'player_height'   => in_array( $player_size[1], array( '9', '3' ) ) ? 720 : $player_size[1],
-				'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
-				'upload_date'     => $upload_date,
-				'duration'        => $duration,
-				'url'             => $url,
-				'description'     => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
-				'name'            => $name,
-				'embed_url'       => $embed_url,
-				'preview_url'     => $this->get_preview_url( $video_id ),
-			);
-
-			$render = $this->latte->renderToString(
-				$this->utils->get_templates_path() . '/template-video.latte',
-				$params
-			);
-
-			$render = str_replace( array( "\n", "\t", "\r" ), '', $render );
-
-			return $render;
+		if ( ! $matches ) {
+			return $return;
 		}
 
-		return $return;
+		$post = get_post();
+
+		$video_id  = $matches[2];
+		$embed_url = $matches[1];
+
+		$player_parameters = parse_url( $embed_url, PHP_URL_QUERY );
+
+		$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
+
+		// Get duration from API.
+		$duration    = 'T00H10M00S';
+		$upload_date = get_post_time( 'c', false, $post, false );
+		$name        = ( ! empty( $data->title ) )
+			? $data->title
+			: $post->post_title;
+
+		$description = ( ! empty( $post->post_excerpt ) )
+			? $post->post_excerpt
+			: $this->wposa->get_option( 'description', 'mlye_general' );
+
+		$api_key     = $this->get_api_key();
+
+		if ( $api_key ) {
+			$request = sprintf( self::CONTENT_DETAILS_URL, $video_id, $api_key );
+			$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
+			$body = wp_remote_retrieve_body( $request );
+
+			if ( $body ) {
+				$body            = json_decode( $body, false );
+				$content_details = $body->items[0]->contentDetails;
+				$snippet         = $body->items[0]->snippet;
+
+				$duration    = $content_details->duration;
+				$name        = $snippet->title;
+				$description = $snippet->description;
+				$upload_date = $snippet->publishedAt;
+			}
+		} else {
+			$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
+			$request = wp_remote_get( $url, array( 'timeout' => $this->get_timeout() ) );
+			$body    = wp_remote_retrieve_body( $request );
+
+			if ( $body ) {
+				$body = json_decode( $body, false );
+				$name = $body->title;
+			}
+		}
+
+		$description = str_replace( PHP_EOL, ' ', $description );
+		$description = wp_strip_all_tags( $description );
+
+		$params = array(
+			'use_microdata'     => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
+			'use_lazy_load'     => ( 'yes' === $this->wposa->get_option( 'use_lazy_load', 'mlye_general' ) ),
+			'preview_quality'   => $this->wposa->get_option( 'preview_quality', 'mlye_general', 'auto' ),
+			'video_id'          => $video_id,
+			'player_width'      => in_array( $player_size[0], array( '16', '4' ), true ) ? 1280 : $player_size[0],
+			'player_height'     => in_array( $player_size[1], array( '9', '3' ), true ) ? 720 : $player_size[1],
+			'player_class'      => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
+			'player_parameters' => $player_parameters,
+			'upload_date'       => $upload_date,
+			'duration'          => $duration,
+			'url'               => $url,
+			'description'       => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
+			'name'              => $name,
+			'embed_url'         => $embed_url,
+			'preview_url'       => $this->get_preview_url( $video_id ),
+		);
+
+		$render = $this->latte->renderToString(
+			$this->utils->get_templates_path() . '/template-video.latte',
+			$params
+		);
+
+		$render = str_replace( array( "\n", "\t", "\r" ), '', $render );
+
+		return $render;
 	}
 
 	/**

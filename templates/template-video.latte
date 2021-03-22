@@ -1,5 +1,5 @@
 {if $use_lazy_load}
-	<lite-youtube class="{$player_class}" videoid="{$video_id}">
+	<lite-youtube class="{$player_class}" video-id="{$video_id}" player-parameters="{$player_parameters}">
 		<lite-youtube__button class="lite-youtube__button lty-playbtn"></lite-youtube__button>
 		<lite-youtube__preview class="lite-youtube__preview">
 			<img src="{$preview_url}"
@@ -13,7 +13,7 @@
 		<lite-youtube__name class="lite-youtube__name">{$name}</lite-youtube__name>
 	</lite-youtube>
 {else}
-	<lite-youtube class="{$player_class}" videoid="{$video_id}">
+	<lite-youtube class="{$player_class}" video-id="{$video_id}" player-parameters="{$player_parameters}">
 		<lite-youtube__button class="lite-youtube__button lty-playbtn"></lite-youtube__button>
 		<lite-youtube__preview class="lite-youtube__preview">
 			<img src="{$preview_url}"

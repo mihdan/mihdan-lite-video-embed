@@ -92,6 +92,8 @@ class Settings {
 					20 => 20,
 					25 => 25,
 					30 => 30,
+					60 => 60,
+					90 => 90,
 				),
 				'default' => 5,
 				'desc'    => __( 'Timeout for HTTP requests', 'mihdan-lite-youtube-embed' ),
