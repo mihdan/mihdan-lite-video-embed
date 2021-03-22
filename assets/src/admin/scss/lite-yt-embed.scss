@@ -1,16 +1,16 @@
 /**
  * @link https://www.youtube.com/about/brand-resources/#logos-icons-colors
  */
-.block-editor-page .wp-block-embed .wp-block-embed__wrapper {
+.block-editor-page .wp-block-embed.is-type-video .wp-block-embed__wrapper {
     background-color: #282828;
     cursor: pointer;
 }
-.block-editor-page .wp-block-embed .wp-block-embed__wrapper:before {
+.block-editor-page .wp-block-embed.is-type-video .wp-block-embed__wrapper:before {
     content: '';
     padding-bottom: calc(100% / (16 / 9));
     display: block;
 }
-.block-editor-page .wp-block-embed .wp-block-embed__wrapper:after {
+.block-editor-page .wp-block-embed.is-type-video .wp-block-embed__wrapper:after {
     content: '';
     display: block;
     width: 68px;
@@ -24,9 +24,9 @@
     filter: grayscale(100%);
     transition: filter .1s cubic-bezier(0, 0, 0.2, 1);
 }
-.block-editor-page .wp-block-embed .wp-block-embed__wrapper:hover:after {
+.block-editor-page .wp-block-embed.is-type-video .wp-block-embed__wrapper:hover:after {
     filter: none;
 }
-.block-editor-page .wp-block-embed .wp-block-embed__wrapper iframe {
+.block-editor-page .wp-block-embed.is-type-video .wp-block-embed__wrapper iframe {
     display: none;
 }
