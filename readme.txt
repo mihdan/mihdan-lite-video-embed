@@ -3,7 +3,7 @@ Contributors: mihdan
 Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
-Tested up to: 5.8
+Tested up to: 5.9
 Stable tag: trunk
 Requires PHP: 5.6.20
 License: GPLv2 or later
@@ -31,6 +31,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.6.6 (25.10.2021) =
+* Fixed bug with muted video on mobile devices
 
 = 1.6.5 (19.08.2021) =
 * Added default margin for the player
