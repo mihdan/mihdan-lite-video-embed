@@ -18,11 +18,11 @@ class Settings {
 	/**
 	 * WP_OSA instance.
 	 *
-	 * @var WP_OSA $wposa
+	 * @var Wposa $wposa
 	 */
 	private $wposa;
 
-	public function __construct( WP_OSA $wposa ) {
+	public function __construct( Wposa $wposa ) {
 		$this->wposa = $wposa;
 
 		$this->setup_hooks();
