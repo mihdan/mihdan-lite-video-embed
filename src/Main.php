@@ -78,7 +78,7 @@ class Main {
 	 *
 	 * @link https://regexr.com/5hocf
 	 */
-	const IFRAME_PATTERN = '#<p><iframe\s.*?src="(?:https?:)?\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})"(?:[^>]+)?><\/iframe><\/p>#i';
+	const IFRAME_PATTERN = '#<iframe\s.*?src="(?:https?:)?\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})"(?:[^>]+)?><\/iframe>#si';
 	const IFRAME_REPLACEMENT = 'https://www.youtube.com/watch?v=$1';
 
 	/**
@@ -209,7 +209,14 @@ class Main {
 			return $content;
 		}
 
-		return $wp_embed->autoembed( preg_replace( self::IFRAME_PATTERN, self::IFRAME_REPLACEMENT, $content ) );
+		// Fix breaking layout.
+		$content = str_replace(
+			[ '<p><iframe', '</iframe></p>' ],
+			[ '<iframe', '</iframe>' ],
+			$content
+		);
+
+		return $wp_embed->autoembed( preg_replace( self::IFRAME_PATTERN, PHP_EOL . self::IFRAME_REPLACEMENT . PHP_EOL, $content ) );
 	}
 
 	/**

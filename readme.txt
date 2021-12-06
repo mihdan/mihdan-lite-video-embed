@@ -4,7 +4,7 @@ Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
 Tested up to: 5.9
-Stable tag: 1.6.8
+Stable tag: 1.6.8.1
 Requires PHP: 5.6.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -34,6 +34,7 @@ e.g.
 
 = 1.6.8 (06.12.2021) =
 * Added support for PHP8
+* Updated RegEx for iframe support
 
 = 1.6.7 (06.12.2021) =
 * Fixed bug with support Youtube iframe
