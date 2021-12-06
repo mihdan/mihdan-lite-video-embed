@@ -42,7 +42,7 @@ class Main {
 	/**
 	 * WP_OSA instance.
 	 *
-	 * @var WP_OSA $wposa
+	 * @var Wposa $wposa
 	 */
 	private $wposa;
 
@@ -74,6 +74,14 @@ class Main {
 	const VALIDATE_KEY_URL = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=YouTube+Data+API&type=video&key=%s';
 
 	/**
+	 * Pattern for parsing youtube iframe
+	 *
+	 * @link https://regexr.com/5hocf
+	 */
+	const IFRAME_PATTERN = '#<p><iframe\s.*?src="(?:https?:)?\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})"(?:[^>]+)?><\/iframe><\/p>#i';
+	const IFRAME_REPLACEMENT = 'https://www.youtube.com/watch?v=$1';
+
+	/**
 	 * HTTP timeout.
 	 *
 	 * @var int
@@ -93,7 +101,7 @@ class Main {
 	public function __construct() {
 		$this->wpdb     = $GLOBALS['wpdb'];
 		$this->utils    = new Utils();
-		$this->wposa    = new WP_OSA( $this->utils );
+		$this->wposa    = new Wposa( $this->utils );
 		$this->settings = new Settings( $this->wposa );
 		$this->latte    = new Engine();
 		$this->api_key  = $this->wposa->get_option( 'api_key', 'mlye_general' );
@@ -112,6 +120,7 @@ class Main {
 		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 100, 3 );
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
 		add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 );
+		add_filter( 'the_content', array( $this, 'parse_iframe' ) );
 
 		// Elementor support.
 		if ( did_action( 'elementor/loaded' ) ) {
@@ -200,15 +209,7 @@ class Main {
 			return $content;
 		}
 
-		/**
-		 * @link https://regexr.com/5hocf
-		 */
-		$pattern     = '#<p><iframe\s.*?src="(?:https?:)?\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})"(?:[^>]+)?><\/iframe><\/p>#i';
-		$replacement = '<lite-youtube class="lite-youtube_16x9" videoid="$1" style="background-image: url(ddd);"><div class="lty-playbtn"></div></lite-youtube>';
-
-		$content = $wp_embed->autoembed( preg_replace( $pattern, $replacement, $content ) );
-
-		return $content;
+		return $wp_embed->autoembed( preg_replace( self::IFRAME_PATTERN, self::IFRAME_REPLACEMENT, $content ) );
 	}
 
 	/**
@@ -221,6 +222,61 @@ class Main {
 	 */
 	public function get_preview_template( $video_id, $quality ) {
 		return sprintf( self::PREVIEW_URL, $video_id, $quality );
+	}
+
+	private function sanitize_video_description( $description ) {
+		return wp_strip_all_tags( str_replace( PHP_EOL, ' ', $description ) );
+	}
+
+	private function get_data_from_api( $video_id ) {
+		$api_key = $this->get_api_key();
+
+		// Default data.
+		$post        = get_post();
+		$duration    = 'T00H10M00S';
+		$upload_date = get_post_time( 'c', false, $post, false );
+		$name        = $post->post_title;
+
+		$description = ( ! empty( $post->post_excerpt ) )
+			? $post->post_excerpt
+			: $this->wposa->get_option( 'description', 'mlye_general' );
+
+		$result = [
+			'duration' => $duration,
+			'name' => $name,
+			'description' => $this->sanitize_video_description( $description ),
+			'upload_date' => $upload_date,
+		];
+
+		if ( $api_key ) {
+			$request = sprintf( self::CONTENT_DETAILS_URL, $video_id, $api_key );
+			$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
+			$body    = wp_remote_retrieve_body( $request );
+
+			if ( $body ) {
+				$body            = json_decode( $body, false );
+				$content_details = $body->items[0]->contentDetails;
+				$snippet         = $body->items[0]->snippet;
+
+				$result = [
+					'duration' => $content_details->duration,
+					'name' => $snippet->title,
+					'description' => $this->sanitize_video_description( $snippet->description ),
+					'upload_date' => $snippet->publishedAt,
+				];
+			}
+		} else {
+			$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
+			$request = wp_remote_get( $url, array( 'timeout' => $this->get_timeout() ) );
+			$body    = wp_remote_retrieve_body( $request );
+
+			if ( $body ) {
+				$body   = json_decode( $body, false );
+				$result = wp_parse_args( [ 'name' => $body->title ], $result );
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -245,8 +301,6 @@ class Main {
 			return $return;
 		}
 
-		$post = get_post();
-
 		$video_id  = $matches[2];
 		$embed_url = $matches[1];
 
@@ -255,46 +309,7 @@ class Main {
 		$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
 
 		// Get duration from API.
-		$duration    = 'T00H10M00S';
-		$upload_date = get_post_time( 'c', false, $post, false );
-		$name        = ( ! empty( $data->title ) )
-			? $data->title
-			: $post->post_title;
-
-		$description = ( ! empty( $post->post_excerpt ) )
-			? $post->post_excerpt
-			: $this->wposa->get_option( 'description', 'mlye_general' );
-
-		$api_key     = $this->get_api_key();
-
-		if ( $api_key ) {
-			$request = sprintf( self::CONTENT_DETAILS_URL, $video_id, $api_key );
-			$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
-			$body = wp_remote_retrieve_body( $request );
-
-			if ( $body ) {
-				$body            = json_decode( $body, false );
-				$content_details = $body->items[0]->contentDetails;
-				$snippet         = $body->items[0]->snippet;
-
-				$duration    = $content_details->duration;
-				$name        = $snippet->title;
-				$description = $snippet->description;
-				$upload_date = $snippet->publishedAt;
-			}
-		} else {
-			$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
-			$request = wp_remote_get( $url, array( 'timeout' => $this->get_timeout() ) );
-			$body    = wp_remote_retrieve_body( $request );
-
-			if ( $body ) {
-				$body = json_decode( $body, false );
-				$name = $body->title;
-			}
-		}
-
-		$description = str_replace( PHP_EOL, ' ', $description );
-		$description = wp_strip_all_tags( $description );
+		$api = $this->get_data_from_api( $video_id );
 
 		$params = array(
 			'use_microdata'     => ( 'yes' === $this->wposa->get_option( 'use_microdata', 'mlye_general' ) ),
@@ -305,11 +320,11 @@ class Main {
 			'player_height'     => in_array( $player_size[1], array( '9', '3' ), true ) ? 720 : $player_size[1],
 			'player_class'      => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
 			'player_parameters' => $player_parameters,
-			'upload_date'       => $upload_date,
-			'duration'          => $duration,
+			'upload_date'       => $api['upload_date'],
+			'duration'          => $api['duration'],
 			'url'               => $url,
-			'description'       => mb_substr( $description, 0, 250, 'UTF-8' ) . '...',
-			'name'              => $name,
+			'description'       => mb_substr( $api['description'], 0, 250, 'UTF-8' ) . '...',
+			'name'              => $api['name'],
 			'embed_url'         => $embed_url,
 			'preview_url'       => $this->get_preview_url( $video_id ),
 		);
@@ -319,9 +334,7 @@ class Main {
 			$params
 		);
 
-		$render = str_replace( array( "\n", "\t", "\r" ), '', $render );
-
-		return $render;
+		return str_replace( array( "\n", "\t", "\r" ), '', $render );
 	}
 
 	/**
