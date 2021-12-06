@@ -4,7 +4,7 @@ Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
 Tested up to: 5.9
-Stable tag: trunk
+Stable tag: 1.6.7
 Requires PHP: 5.6.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -31,6 +31,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.6.7 (06.12.2021) =
+* Fixed bug with support Youtube iframe
 
 = 1.6.6 (25.10.2021) =
 * Fixed bug with muted video on mobile devices
