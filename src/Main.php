@@ -355,7 +355,7 @@ class Main {
 		$quality = $this->wposa->get_option( 'preview_quality', 'mlye_general', 'auto' );
 
 		if ( 'auto' === $quality ) {
-			foreach( array( 'maxresdefault', 'hqdefault', 'mqdefault', 'sddefault' ) as $size ) {
+			foreach( array( 'maxresdefault', 'sddefault', 'hqdefault', 'mqdefault' ) as $size ) {
 				$response = wp_remote_head( $this->get_preview_template( $video_id, $size ), array( 'timeout' => $this->get_timeout() ) );
 
 				if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
