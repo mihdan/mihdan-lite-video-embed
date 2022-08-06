@@ -248,6 +248,10 @@ class Main {
 			? $post->post_excerpt
 			: $this->wposa->get_option( 'description', 'mlye_general' );
 
+		if ( empty( $description ) ) {
+			$description = $name;
+		}
+
 		$result = [
 			'duration' => $duration,
 			'name' => $name,

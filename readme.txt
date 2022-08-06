@@ -3,8 +3,8 @@ Contributors: mihdan
 Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
-Tested up to: 5.9
-Stable tag: 1.6.8.1
+Tested up to: 6.0
+Stable tag: 1.6.9
 Requires PHP: 5.6.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -31,6 +31,10 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.6.9 (06.08.2022) =
+* Added support for WordPress 6.0 +
+* Added ability to automatically insert the name of the video in the description, if the YouTube API is not connected.
 
 = 1.6.8 (06.12.2021) =
 * Added support for PHP8
