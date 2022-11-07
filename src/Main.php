@@ -319,6 +319,17 @@ class Main {
 
 		$player_size = explode( 'x', $this->wposa->get_option( 'player_size', 'mlye_general', '16x9' ) );
 
+		if ( 'yes' === $this->wposa->get_option( 'hide_related_video', 'mlye_general' ) ) {
+			$player_parameters = add_query_arg(
+				[
+					'rel'            => 0,
+					'showinfo'       => 0,
+					'modestbranding' => 1,
+				],
+				$player_parameters
+			);
+		}
+
 		// Get duration from API.
 		$api = $this->get_data_from_api( $video_id );
 

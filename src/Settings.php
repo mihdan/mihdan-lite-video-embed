@@ -173,6 +173,21 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_general',
 			array(
+				'id'      => 'hide_related_video',
+				'type'    => 'select',
+				'name'    => __( 'Hide Related Video', 'mihdan-lite-youtube-embed' ),
+				'options' => array(
+					'yes' => __( 'Yes', 'mihdan-lite-youtube-embed' ),
+					'no'  => __( 'No', 'mihdan-lite-youtube-embed' ),
+				),
+				'default' => 'no',
+				'desc'    => __( 'This option is for deleting the related video from another channel when using YouTube oEmbed.', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_general',
+			array(
 				'id'      => 'preview_quality',
 				'type'    => 'select',
 				'name'    => __( 'Preview Quality', 'mihdan-lite-youtube-embed' ),
