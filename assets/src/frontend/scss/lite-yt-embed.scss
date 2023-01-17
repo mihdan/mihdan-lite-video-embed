@@ -58,6 +58,7 @@ lite-youtube.lite-youtube_4x3 {
     width: 100% !important;
 }
 
+lite-youtube.lite-youtube_9x16::after,
 lite-youtube.lite-youtube_16x9::after,
 lite-youtube.lite-youtube_4x3::after {
     content: "";
@@ -66,6 +67,17 @@ lite-youtube.lite-youtube_4x3::after {
 
 lite-youtube.lite-youtube_16x9::after {
     padding-bottom: calc(100% / (16 / 9));
+}
+
+lite-youtube.lite-youtube_9x16 {
+    width: 100%;
+    max-width: 500px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+lite-youtube.lite-youtube_9x16:after {
+    padding-bottom: calc(100% / (9 / 16));
 }
 
 lite-youtube.lite-youtube_4x3::after {
@@ -148,6 +160,10 @@ lite-youtube .lite-youtube__image {
     object-position: center;
     max-width: 100%;
     height: auto;
+}
+
+lite-youtube.lite-youtube_9x16 .lite-youtube__image {
+    height: 100%;
 }
 
 lite-youtube .lite-youtube__name {
