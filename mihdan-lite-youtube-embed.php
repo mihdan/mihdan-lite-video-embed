@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Mihdan: Lite YouTube Embed
- * Description: A faster youtube embed.
- * Version: 1.6.11
+ * Description: A faster YouTube/RuTube embed.
+ * Version: 1.7.0
  * Author: Mikhail Kobzarev
  * Author URI: https://www.kobzarev.com/
  * Plugin URI: https://wordpress.org/plugins/mihdan-lite-youtube-embed/
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MIHDAN_LITE_YOUTUBE_EMBED_VERSION', '1.6.11' );
+define( 'MIHDAN_LITE_YOUTUBE_EMBED_VERSION', '1.7.0' );
 define( 'MIHDAN_LITE_YOUTUBE_EMBED_SLUG', 'mihdan-lite-youtube-embed' );
 define( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR', __DIR__ );
 define( 'MIHDAN_LITE_YOUTUBE_EMBED_FILE', __FILE__ );

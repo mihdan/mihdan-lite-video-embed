@@ -10,6 +10,7 @@ namespace Mihdan\LiteYouTubeEmbed;
 use Elementor\Widgets_Manager;
 use Elementor\Plugin;
 use Latte\Engine;
+use Mihdan\LiteYouTubeEmbed\Providers\RuTube;
 use wpdb;
 
 /**
@@ -106,6 +107,8 @@ class Main {
 		$this->latte    = new Engine();
 		$this->api_key  = $this->wposa->get_option( 'api_key', 'mlye_general' );
 		$this->timeout  = $this->wposa->get_option( 'timeout', 'mlye_general' );
+
+		( new RuTube() )->setup_hooks();
 	}
 
 	/**

@@ -3,9 +3,9 @@ Contributors: mihdan
 Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
-Tested up to: 6.1
-Stable tag: 1.6.11
-Requires PHP: 5.6.20
+Tested up to: 6.2
+Stable tag: 1.7.0
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.7.0 (11.04.2023) =
+*
 
 = 1.6.11 (17.01.2023) =
 * Added support for YouTube Shorts (9:16)

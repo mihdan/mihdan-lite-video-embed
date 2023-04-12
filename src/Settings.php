@@ -64,7 +64,7 @@ class Settings {
 		$this->wposa->add_section(
 			array(
 				'id'    => 'mlye_general',
-				'title' => __( 'General', 'mihdan-lite-youtube-embed' ),
+				'title' => __( 'YouTube', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
@@ -223,6 +223,24 @@ class Settings {
 					'960x720'  => __( '960x720 (Maxi 4:3 player)', 'mihdan-lite-youtube-embed' ),
 				),
 				'default' => '16x9',
+			)
+		);
+
+		$this->wposa->add_section(
+			array(
+				'id'    => 'mlye_rutube',
+				'title' => __( 'RuTube', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_rutube',
+			array(
+				'id'          => 'api_key',
+				'type'        => 'text',
+				'name'        => __( 'API Key', 'mihdan-lite-youtube-embed' ),
+				'placeholder' => 'AIzaSyDe12JAR7DaIzUSGFIfiMuPPIOf1YMaKr4',
+				'desc'        => __( 'Plugin uses RuTube\'s API to fetch information on each video. <br />For your site to use that API, you will have to <a href="https://console.developers.google.com/apis/library" target="_blank">register</a> your site as a new application, <br />enable the RuTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
