@@ -19,8 +19,8 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_path() {
-		return MIHDAN_LITE_YOUTUBE_EMBED_DIR;
+	public static function get_plugin_path(): string {
+		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR' );
 	}
 
 	/**
@@ -28,8 +28,8 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_templates_path() {
-		return MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/templates';
+	public static function get_templates_path(): string {
+		return self::get_plugin_path() . '/templates';
 	}
 
 	/**
@@ -37,8 +37,8 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_version() {
-		return MIHDAN_LITE_YOUTUBE_EMBED_VERSION;
+	public static function get_plugin_version(): string {
+		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_VERSION' );
 	}
 
 	/**
@@ -46,8 +46,8 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_url() {
-		return MIHDAN_LITE_YOUTUBE_EMBED_URL;
+	public static function get_plugin_url(): string {
+		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_URL' );
 	}
 
 	/**
@@ -55,8 +55,8 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_slug() {
-		return MIHDAN_LITE_YOUTUBE_EMBED_SLUG;
+	public static function get_plugin_slug():string {
+		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_SLUG' );
 	}
 
 	/**
@@ -64,8 +64,8 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_file() {
-		return MIHDAN_LITE_YOUTUBE_EMBED_FILE;
+	public static function get_plugin_file(): string {
+		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_FILE' );
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_basename() {
+	public static function get_plugin_basename(): string {
 		return plugin_basename( MIHDAN_LITE_YOUTUBE_EMBED_FILE );
 	}
 
@@ -82,12 +82,7 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public function get_plugin_title() {
-		$slug = MIHDAN_LITE_YOUTUBE_EMBED_SLUG;
-		$slug = str_replace( 'mihdan-', '', $slug );
-		$slug = str_replace( '-', ' ', $slug );
-		$slug = ucwords( $slug );
-
-		return $slug;
+	public static function get_plugin_title(): string {
+		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_NAME' );
 	}
 }

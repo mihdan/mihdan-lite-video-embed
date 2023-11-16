@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 bootstrap="tests/phpunit/bootstrap.php"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 beStrictAboutTestsThatDoNotTestAnything="false"
+		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd">
+	<coverage>
+		<include>
+			<directory suffix=".php">./src</directory>
+		</include>
+	</coverage>
+	<testsuites>
+		<testsuite name="mihdan-lite-youtube-embed-tests">
+			<directory suffix=".php">tests/phpunit</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

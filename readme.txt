@@ -1,21 +1,43 @@
-=== Mihdan: Lite YouTube Embed ===
+=== Lite Video Embed ===
 Contributors: mihdan
 Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
-Tested up to: 6.2
+Tested up to: 6.4
 Stable tag: 1.7.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A faster youtube embed.
+A faster YouTube/RuTube embed.
 
 == Description ==
 
-A faster youtube embed. Renders faster than a sneeze.
+A faster YouTube/RuTube embed. Renders faster than a sneeze.
 
 Provide videos with a supercharged focus on visual performance. This custom element renders just like the real thing but approximately 224X faster.
+
+### ✅ For now, you can embed ###
+- YouTube video
+- RuTube video
+
+### ⏳ Coming soon ###
+- Vkontakte
+- Odnoklassniki
+- Vimeo
+- TikTok
+
+### ⛑️ Documentation and support
+
+If you have some questions or suggestions, welcome to our [support forum](https://wordpress.org/support/plugin/mihdan-lite-youtube-embed/).
+
+### 💙 Love Lite Video Embed?
+If the plugin was useful, rate it with a [5 star rating](https://wordpress.org/support/plugin/mihdan-lite-youtube-embed/reviews/) and write a few nice words.
+
+### 🏳️ Translations
+- [Russian](https://translate.wordpress.org/locale/ru/default/wp-plugins/mihdan-lite-youtube-embed/) – (ru_RU)
+
+Can you help with plugin translation? Please feel free to contribute!
 
 == Installation ==
 
@@ -32,8 +54,11 @@ e.g.
 
 == Changelog ==
 
-= 1.7.0 (11.04.2023) =
-*
+= 1.7.0 (16.11.2023) =
+* Added ability to embed RuTube videos
+* Added support for WordPress 6.2 +
+* Added the hook `mlye/youtube/render`
+* Updated RegEx for iframe support
 
 = 1.6.11 (17.01.2023) =
 * Added support for YouTube Shorts (9:16)
@@ -51,7 +76,7 @@ e.g.
 * Updated RegEx for iframe support
 
 = 1.6.7 (06.12.2021) =
-* Fixed bug with support Youtube iframe
+* Fixed bug with support YouTube iframe
 
 = 1.6.6 (25.10.2021) =
 * Fixed bug with muted video on mobile devices
@@ -123,7 +148,7 @@ e.g.
 * Fixed bugs
 * Added OceanWP theme support
 * Added responsive sizes to player
-* Added micro data for video from API
+* Added microdata for video from API
 
 = 1.4.3 (22.07.2020) =
 * Fixed bugs

@@ -42,10 +42,6 @@ class LiteYTEmbed extends HTMLElement {
     }
 
     connectedCallback() {
-        //this.style.backgroundImage = `url("${this.posterUrl}")`;
-        //const playBtn = document.createElement('div');
-        //playBtn.classList.add('lty-playbtn');
-        //this.append(playBtn);
 
         // On hover (or tap), warm up the TCP connections we're (likely) about to use.
         this.addEventListener('pointerover', LiteYTEmbed.warmConnections, {once: true});

@@ -1,4 +1,4 @@
-# Mihdan: Lite YouTube Embed
+# Lite Video Embed
 
 > #### Renders faster than a sneeze.
 

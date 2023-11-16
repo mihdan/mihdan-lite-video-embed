@@ -56,7 +56,7 @@ class Elementor extends Widget_Base {
 	 * @return string Widget title.
 	 */
 	public function get_title() {
-		return __( 'Lite YouTube Embed', 'mihdan-elementor-yandex-maps' );
+		return __( 'Lite YouTube Embed', 'mihdan-lite-youtube-embed' );
 	}
 
 	/**

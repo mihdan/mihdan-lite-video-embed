@@ -18,11 +18,11 @@ class Settings {
 	/**
 	 * WP_OSA instance.
 	 *
-	 * @var Wposa $wposa
+	 * @var Options $wposa
 	 */
 	private $wposa;
 
-	public function __construct( Wposa $wposa ) {
+	public function __construct( Options $wposa ) {
 		$this->wposa = $wposa;
 
 		$this->setup_hooks();
@@ -228,24 +228,6 @@ class Settings {
 
 		$this->wposa->add_section(
 			array(
-				'id'    => 'mlye_rutube',
-				'title' => __( 'RuTube', 'mihdan-lite-youtube-embed' ),
-			)
-		);
-
-		$this->wposa->add_field(
-			'mlye_rutube',
-			array(
-				'id'          => 'api_key',
-				'type'        => 'text',
-				'name'        => __( 'API Key', 'mihdan-lite-youtube-embed' ),
-				'placeholder' => 'AIzaSyDe12JAR7DaIzUSGFIfiMuPPIOf1YMaKr4',
-				'desc'        => __( 'Plugin uses RuTube\'s API to fetch information on each video. <br />For your site to use that API, you will have to <a href="https://console.developers.google.com/apis/library" target="_blank">register</a> your site as a new application, <br />enable the RuTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
-			)
-		);
-
-		$this->wposa->add_section(
-			array(
 				'id'    => 'mlye_tools',
 				'title' => __( 'Tools', 'mihdan-lite-youtube-embed' ),
 			)
@@ -274,7 +256,7 @@ class Settings {
 				'id'   => 'description',
 				'type' => 'html',
 				'name' => __( 'Telegram', 'mihdan-lite-youtube-embed' ),
-				'desc' => __( 'Связаться со мной можно в телеграм <a href="https://t.me/mihdan" target="_blank">@mihdan</a>', 'mihdan-lite-youtube-embed' ),
+				'desc' => __( 'Связаться со мной можно в телеграм <a href="https://t.me/+BMLrs_JudDg3Y2Zi" target="_blank">чате поддержки</a>', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 

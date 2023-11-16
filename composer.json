@@ -21,7 +21,9 @@
     "require": {
         "php": ">=7.4",
         "latte/latte": "^2.10",
-        "ext-json": "*"
+        "ext-json": "*",
+        "lucatume/function-mocker": "^1.3",
+        "10up/wp_mock": "^1.0"
     }
     ,
     "require-dev": {
@@ -31,16 +33,23 @@
         "phpcompatibility/phpcompatibility-wp": "^2.1",
         "wp-coding-standards/wpcs": "^2.3",
         "vimeo/psalm": "^4.30",
-        "humanmade/psalm-plugin-wordpress": "^2.1"
+        "humanmade/psalm-plugin-wordpress": "^2.1",
+        "phpunit/phpunit": "^9.6"
     },
     "autoload": {
         "psr-4": {
             "Mihdan\\LiteYouTubeEmbed\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Mihdan\\LiteYouTubeEmbed\\": "tests/phpunit/tests"
+        }
+    },
     "scripts": {
         "phpcs": "phpcs --standard=./phpcs.xml",
         "phpcbf": "phpcbf --standard=./phpcs.xml",
-        "psalm": "psalm --config=./psalm.xml"
+        "psalm": "psalm --config=./psalm.xml",
+        "tests": "phpunit -c ./phpunit.xml"
     }
 }

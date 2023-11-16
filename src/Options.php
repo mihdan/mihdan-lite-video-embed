@@ -15,17 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * WP_OSA.
- *
- * WP Settings API Class.
- *
- * @since 1.0.0
- */
-
-if ( ! class_exists( 'Wposa' ) ) :
-
-	class Wposa {
+if ( ! class_exists( 'Options' ) ) :
+	/**
+	 * WP_OSA.
+	 *
+	 * WP Settings API Class.
+	 *
+	 * @since 1.0.0
+	 */
+	class Options {
 
 		/**
 		 * Sections array.
@@ -709,6 +707,25 @@ if ( ! class_exists( 'Wposa' ) ) :
 		 */
 		function get_option( $option, $section, $default = '' ) {
 
+			$options = get_option( $section );
+
+			if ( isset( $options[ $option ] ) ) {
+				return $options[ $option ];
+			}
+
+			return $default;
+		}
+
+		/**
+		 * Get the value of a settings field
+		 *
+		 * @param string $option  Settings field name.
+		 * @param string $section The section name this field belongs to.
+		 * @param mixed  $default Default text if it's not found.
+		 *
+		 * @return mixed
+		 */
+		public static function get( string $option, string $section, $default = '' ) {
 			$options = get_option( $section );
 
 			if ( isset( $options[ $option ] ) ) {
