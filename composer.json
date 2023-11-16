@@ -21,9 +21,7 @@
     "require": {
         "php": ">=7.4",
         "latte/latte": "^2.10",
-        "ext-json": "*",
-        "lucatume/function-mocker": "^1.3",
-        "10up/wp_mock": "^1.0"
+        "ext-json": "*"
     }
     ,
     "require-dev": {
@@ -34,7 +32,9 @@
         "wp-coding-standards/wpcs": "^2.3",
         "vimeo/psalm": "^4.30",
         "humanmade/psalm-plugin-wordpress": "^2.1",
-        "phpunit/phpunit": "^9.6"
+        "phpunit/phpunit": "^9.6",
+        "lucatume/function-mocker": "^1.3",
+        "10up/wp_mock": "^1.0"
     },
     "autoload": {
         "psr-4": {
