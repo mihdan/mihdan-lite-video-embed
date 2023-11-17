@@ -77,7 +77,7 @@ class RuTube extends Provider {
 	 */
 	public function setup_hooks(): void {
 		add_action( 'init', [ $this, 'register_handler' ] );
-		add_action( 'mlye/rutube/render', [ $this, 'auto_embed_content' ] );
+		add_filter( 'mlye/rutube/render', [ $this, 'auto_embed_content' ] );
 	}
 
 	/**

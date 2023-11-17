@@ -4,7 +4,7 @@ Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -53,6 +53,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.7.1 (17.11.2023) =
+* Fixed the hook `mlye/youtube/render`
 
 = 1.7.0 (16.11.2023) =
 * Added ability to embed RuTube videos

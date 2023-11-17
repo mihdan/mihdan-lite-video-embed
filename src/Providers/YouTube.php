@@ -107,7 +107,7 @@ class YouTube extends Provider {
 		add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 );
 		add_filter( 'oembed_remote_get_args', array( $this, 'oembed_remote_set_timeout' ), 10, 2 );
 		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 100, 3 );
-		add_action( 'mlye/youtube/render', [ $this, 'auto_embed_content' ] );
+		add_filter( 'mlye/youtube/render', [ $this, 'auto_embed_content' ] );
 	}
 
 	/**
