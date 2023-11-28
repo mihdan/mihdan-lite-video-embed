@@ -243,6 +243,16 @@ class Settings {
 			)
 		);
 
+		$this->wposa->add_field(
+			'mlye_tools',
+			[
+				'id'   => 'delete_plugin_data',
+				'type' => 'checkbox',
+				'name' => __( 'Delete plugin data', 'mihdan-lite-youtube-embed' ),
+				'desc' => __( 'Delete plugin data upon uninstall.', 'mihdan-lite-youtube-embed' ),
+			]
+		);
+
 		$this->wposa->add_section(
 			array(
 				'id'    => 'mlye_contacts',
@@ -256,7 +266,17 @@ class Settings {
 				'id'   => 'description',
 				'type' => 'html',
 				'name' => __( 'Telegram', 'mihdan-lite-youtube-embed' ),
-				'desc' => __( 'Связаться со мной можно в телеграм <a href="https://t.me/+BMLrs_JudDg3Y2Zi" target="_blank">чате поддержки</a>', 'mihdan-lite-youtube-embed' ),
+				'desc' => __( '🆘 Связаться со мной можно в телеграм <a href="https://t.me/+BMLrs_JudDg3Y2Zi" target="_blank">чате поддержки</a>.', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_contacts',
+			array(
+				'id'   => 'donate',
+				'type' => 'html',
+				'name' => __( 'Donate', 'mihdan-lite-youtube-embed' ),
+				'desc' => __( '❤️ Помочь в развитии проекта можно на <a href="https://www.kobzarev.com/donate/" target="_blank">официальнос сайте</a>', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 

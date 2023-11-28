@@ -207,7 +207,7 @@ if ( ! class_exists( 'Options' ) ) :
 			foreach ( $this->sections_array as $section ) {
 				if ( false == get_option( $section['id'] ) ) {
 					// Add a new field as section ID.
-					add_option( $section['id'] );
+					add_option( $section['id'], [] );
 				}
 
 				// Deals with sections description.
@@ -950,6 +950,10 @@ if ( ! class_exists( 'Options' ) ) :
                 #mlye_plugins .form-table > tr > th,
                 #mlye_plugins .form-table > tbody > tr > th {
                     display: none;
+                }
+                #submit_mlye_contacts,
+                #submit_mlye_plugins {
+	                display: none;
                 }
 			</style>
 			<?php
