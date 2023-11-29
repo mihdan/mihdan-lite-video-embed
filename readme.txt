@@ -4,7 +4,7 @@ Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.7.2
+Stable tag: 1.7.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -53,6 +53,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.7.3 (30.11.2023) =
+* Added integration with the Clearfy plugin from Creative Motishion
 
 = 1.7.2 (28.11.2023) =
 * Added setting to clean up the database when the plugin is uninstalled

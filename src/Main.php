@@ -13,6 +13,7 @@ use Elementor\Plugin;
 use Latte\Engine as Latte;
 use Mihdan\LiteYouTubeEmbed\Providers\RuTube;
 use Mihdan\LiteYouTubeEmbed\Providers\YouTube;
+use Mihdan\LiteYouTubeEmbed\ThirdParty\CreativeMotionClearfy;
 use wpdb;
 use Exception;
 
@@ -69,12 +70,15 @@ class Main {
 
 		( new YouTube( $this->latte ) )->setup_hooks();
 		( new RuTube( $this->latte ) )->setup_hooks();
+
+		// Webcraftic Clearfy.
+		( new CreativeMotionClearfy() )->setup_hooks();
 	}
 
 	/**
 	 * Setup hooks.
 	 */
-	public function setup_hooks() {
+	public function setup_hooks(): void {
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
