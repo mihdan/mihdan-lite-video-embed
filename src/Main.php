@@ -31,13 +31,6 @@ class Main {
 	private $wpdb;
 
 	/**
-	 * Latte instance.
-	 *
-	 * @var Latte
-	 */
-	private Latte $latte;
-
-	/**
 	 * Utils instance.
 	 *
 	 * @var Utils $utils
@@ -66,10 +59,9 @@ class Main {
 		$this->utils    = new Utils();
 		$this->wposa    = new Options( $this->utils );
 		$this->settings = new Settings( $this->wposa );
-		$this->latte    = new Latte();
 
-		( new YouTube( $this->latte ) )->setup_hooks();
-		( new RuTube( $this->latte ) )->setup_hooks();
+		( new YouTube() )->setup_hooks();
+		( new RuTube() )->setup_hooks();
 
 		// Webcraftic Clearfy.
 		( new CreativeMotionClearfy() )->setup_hooks();
@@ -82,7 +74,7 @@ class Main {
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
+		//add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
 
 		register_activation_hook( Utils::get_plugin_file(), array( $this, 'on_activate' ) );
@@ -95,9 +87,9 @@ class Main {
 	public function enqueue_gutenberg_assets() {
 		wp_enqueue_style(
 			Utils::get_plugin_slug(),
-			Utils::get_plugin_url() . '/assets/dist/css/admin.css?g',
+			Utils::get_plugin_url() . '/assets/dist/css/admin.css',
 			array( 'wp-edit-blocks' ),
-			time()
+			filemtime( Utils::get_plugin_path() . '/assets/dist/css/admin.css' )
 		);
 	}
 
@@ -105,7 +97,9 @@ class Main {
 	 * Enqueue tinymce assets.
 	 */
 	public function enqueue_tinymce_assets() {
-		add_editor_style( Utils::get_plugin_url() . '/assets/dist/css/admin.css?t' );
+		add_editor_style(
+			Utils::get_plugin_url() . '/assets/dist/css/admin.css'
+		);
 	}
 
 	/**
@@ -124,7 +118,7 @@ class Main {
 			Utils::get_plugin_slug(),
 			Utils::get_plugin_url() . '/assets/dist/js/frontend.js',
 			[],
-			Utils::get_plugin_version(),
+			filemtime( Utils::get_plugin_path() . '/assets/dist/js/frontend.js' ),
 			true
 		);
 

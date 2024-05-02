@@ -70,7 +70,6 @@ abstract class Provider {
 	 * Constructor.
 	 */
 	public function __construct() {
-		echo 'construct init' . PHP_EOL;
 	}
 
 	/**
@@ -78,7 +77,7 @@ abstract class Provider {
 	 *
 	 * @return string
 	 */
-	protected function get_id(): string {
+	protected function get_handler_id(): string {
 		return Utils::get_plugin_slug() . '-' . $this->id;
 	}
 
@@ -89,6 +88,15 @@ abstract class Provider {
 	 */
 	protected function get_oembed_url(): string {
 		return $this->oembed_url;
+	}
+
+	/**
+	 * Get provider id.
+	 *
+	 * @return string
+	 */
+	protected function get_id(): string {
+		return $this->id;
 	}
 
 	/**
@@ -105,7 +113,7 @@ abstract class Provider {
 	 *
 	 * @return string
 	 */
-	protected function get_template(): string {
+	protected function get_template__(): string {
 		return $this->template;
 	}
 
@@ -145,6 +153,35 @@ abstract class Provider {
 	 */
 	protected function get_api_key(): string {
 		return $this->api_key;
+	}
+
+	/**
+	 * Загружает шаблон.
+	 *
+	 * @param array $args Аргументы шаблона.
+	 *
+	 * @return string
+	 */
+	protected function load_template( array $args ) {
+		if ( file_exists( MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/templates/' . $this->get_id() . '.php' ) ) {
+			extract( $args ); // phpcs:ignore
+
+			$template = require MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/templates/' . $this->get_id() . '.php';
+
+			$template = str_replace(
+				[ "\n", "\t", "\r", "  " ],
+				[ "", "", "", " " ],
+				$template
+			);
+
+			return preg_replace(
+				'#[\s]+#',
+				' ',
+				$template
+			);
+		}
+
+		return '';
 	}
 
 	/**

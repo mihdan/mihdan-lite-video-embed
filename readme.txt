@@ -1,13 +1,13 @@
 === Lite Video Embed ===
 Contributors: mihdan
-Donate link: https://www.kobzarev.com/donate/
 Tags: youtube, wordpress, seo-friendly, seo, cache, embed
 Requires at least: 5.0
-Tested up to: 6.4
-Stable tag: 1.7.3
+Tested up to: 6.5
+Stable tag: 1.8.0
 Requires PHP: 7.4
-License: GPLv2 or later
+License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Donate link: https://www.kobzarev.com/donate/
 
 A faster YouTube/RuTube embed.
 
@@ -54,8 +54,13 @@ e.g.
 
 == Changelog ==
 
+= 1.8.0 (02.05.2024) =
+* Latte package has been removed
+* Fixed RuTube player display error
+* Fixed an error of displaying player in block editor
+
 = 1.7.3 (30.11.2023) =
-* Added integration with the Clearfy plugin from Creative Motishion
+* Added integration with the Clearfy plugin from Creative Motion
 
 = 1.7.2 (28.11.2023) =
 * Added setting to clean up the database when the plugin is uninstalled

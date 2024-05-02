@@ -7,25 +7,17 @@
 
 namespace Mihdan\LiteYouTubeEmbed\Providers;
 
-use Latte\Engine as Latte;
 use Mihdan\LiteYouTubeEmbed\Options;
 use Mihdan\LiteYouTubeEmbed\Provider;
-use Mihdan\LiteYouTubeEmbed\Utils;
 use Exception;
 
 /**
  * Extend Provider class.
  */
 class RuTube extends Provider {
-	/**
-	 * Latte instance.
-	 *
-	 * @var Latte
-	 */
-	private Latte $latte;
 
 	/**
-	 * Shemas for RuTube.
+	 * Schemas for RuTube.
 	 *
 	 * @var array|string[]
 	 */
@@ -38,7 +30,7 @@ class RuTube extends Provider {
 	 *
 	 * @var string
 	 */
-	protected string $id = 'mlye-rutube';
+	protected string $id = 'rutube';
 
 	/**
 	 * Provider oembed URL.
@@ -48,7 +40,7 @@ class RuTube extends Provider {
 	protected string $oembed_url = 'https://rutube.ru/api/oembed/?url=https://rutube.ru/video/%s/';
 
 	/**
-	 * Pr0vider API URL.
+	 * Provider API URL.
 	 *
 	 * @var string
 	 */
@@ -60,15 +52,6 @@ class RuTube extends Provider {
 	 * @var string
 	 */
 	protected string $template = '<iframe width="720" height="405" src="https://rutube.ru/play/embed/%s" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Latte $latte Latte instance.
-	 */
-	public function __construct( Latte $latte ) {
-		$this->latte = $latte;
-	}
 
 	/**
 	 * Hooks init.
@@ -196,7 +179,7 @@ class RuTube extends Provider {
 
 		foreach ( $this->get_schemes() as $scheme ) {
 			wp_embed_register_handler(
-				$this->get_id(),
+				$this->get_handler_id(),
 				$scheme,
 				[ $this, 'handler_callback' ]
 			);
@@ -215,7 +198,7 @@ class RuTube extends Provider {
 	 * @throws Exception Exception.
 	 */
 	public function handler_callback( array $matches, array $attr, string $url, array $rawattr ): string {
-		$data = $this->get_data( $matches[1] );
+		$data = $this->get_data( $matches[1] );print_r($data);die;
 
 		if ( ! $data ) {
 			$data = $this->get_fallback_data( $matches[1] );
@@ -225,32 +208,25 @@ class RuTube extends Provider {
 
 		$player_size = explode( 'x', Options::get( 'player_size', 'mlye_general', '16x9' ) );
 
-		$player_parameters = '';
-
 		$params = array(
-			'use_microdata'     => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
-			'use_lazy_load'     => ( 'yes' === Options::get( 'use_lazy_load', 'mlye_general' ) ),
-			'preview_quality'   => Options::get( 'preview_quality', 'mlye_general', 'auto' ),
-			'video_id'          => $video_id,
-			'player_width'      => in_array( $player_size[0], array( '16', '4', '9' ), true ) ? 1280 : $player_size[0],
-			'player_height'     => in_array( $player_size[1], array( '9', '3', '16' ), true ) ? 720 : $player_size[1],
-			'player_class'      => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
-			'player_parameters' => $player_parameters,
-			'upload_date'       => $data['upload_date'],
-			'duration'          => $data['duration'],
-			'url'               => $url,
-			'description'       => mb_substr( $data['description'], 0, 250, 'UTF-8' ) . '...',
-			'name'              => $data['name'],
-			'embed_url'         => $data['embed_url'],
-			'preview_url'       => $data['thumbnail_url'],
+			'use_microdata'   => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
+			'use_lazy_load'   => ( 'yes' === Options::get( 'use_lazy_load', 'mlye_general' ) ),
+			'preview_quality' => Options::get( 'preview_quality', 'mlye_general', 'auto' ),
+			'video_id'        => $video_id,
+			'player_width'    => in_array( $player_size[0], array( '16', '4', '9' ), true ) ? 1280 : $player_size[0],
+			'player_height'   => in_array( $player_size[1], array( '9', '3', '16' ), true ) ? 720 : $player_size[1],
+			'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
+			'player_src'      => $data['embed_url'],
+			'upload_date'     => $data['upload_date'],
+			'duration'        => $data['duration'],
+			'url'             => $url,
+			'description'     => mb_substr( $data['description'], 0, 250, 'UTF-8' ) . '...',
+			'name'            => $data['name'],
+			'embed_url'       => $data['embed_url'],
+			'preview_url'     => $data['thumbnail_url'],
 		);
 
-		$render = $this->latte->renderToString(
-			Utils::get_templates_path() . '/template-video.latte',
-			$params
-		);
-
-		return $render;
+		return $this->load_template( $params );
 	}
 
 }

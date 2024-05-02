@@ -17,7 +17,7 @@ class LiteYTEmbed extends HTMLElement {
         // Gotta encode the untrusted value
         // https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#rule-2---attribute-escape-before-inserting-untrusted-data-into-html-common-attributes
         this.videoId = encodeURIComponent(this.getAttribute('video-id'));
-        this.playerParameters = this.getAttribute('player-parameters');
+        this.playerSrc = this.getAttribute('player-src');
 
         /**
          * Lo, the youtube placeholder image!  (aka the thumbnail, poster image, etc)
@@ -35,9 +35,9 @@ class LiteYTEmbed extends HTMLElement {
          *       - When doing this, apply referrerpolicy (https://github.com/ampproject/amphtml/pull/3940)
          * TODO: Consider using webp if supported, falling back to jpg
          */
-        this.posterUrl = `https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg`;
+        //this.posterUrl = `https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg`;
         // Warm the connection for the poster image
-        LiteYTEmbed.addPrefetch('preload', this.posterUrl, 'image');
+        //LiteYTEmbed.addPrefetch('preload', this.posterUrl, 'image');
         // TODO: support dynamically setting the attribute via attributeChangedCallback
     }
 
@@ -90,19 +90,27 @@ class LiteYTEmbed extends HTMLElement {
         // Not certain if these ad related domains are in the critical path. Could verify with domain-specific throttling.
         LiteYTEmbed.addPrefetch('preconnect', 'https://googleads.g.doubleclick.net');
         LiteYTEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net');
+        LiteYTEmbed.addPrefetch('preconnect', 'https://rutube.ru');
 
         LiteYTEmbed.preconnected = true;
     }
 
     addIframe(){
         const iframeHTML = `
-<iframe width="560" height="315" frameborder="0"
-  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen
-  src="https://www.youtube-nocookie.com/embed/${this.videoId}?autoplay=1&${this.playerParameters}"
-></iframe>`;
+            <iframe
+                width="560"
+                height="315"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                webkitAllowFullScreen
+                mozallowfullscreen
+                allowfullscreen
+                src="${this.playerSrc}"
+            ></iframe>`;
         this.insertAdjacentHTML('beforeend', iframeHTML);
         this.classList.add('lyt-activated');
     }
 }
-// Register custome element
+
+// Register custom element
 customElements.define('lite-youtube', LiteYTEmbed);

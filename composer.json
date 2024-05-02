@@ -20,7 +20,6 @@
     },
     "require": {
         "php": ">=7.4",
-        "latte/latte": "^2.10",
         "ext-json": "*"
     }
     ,

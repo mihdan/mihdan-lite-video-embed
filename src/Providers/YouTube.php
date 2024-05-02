@@ -9,20 +9,12 @@ namespace Mihdan\LiteYouTubeEmbed\Providers;
 
 use Mihdan\LiteYouTubeEmbed\Provider;
 use Mihdan\LiteYouTubeEmbed\Options;
-use Mihdan\LiteYouTubeEmbed\Utils;
-use Latte\Engine as Latte;
 use Exception;
 
 /**
  * Extend Provider.
  */
 class YouTube extends Provider {
-	/**
-	 * Latte instance.
-	 *
-	 * @var Latte
-	 */
-	private Latte $latte;
 
 	/**
 	 * Pattern for parsing YouTube iframe
@@ -86,14 +78,10 @@ class YouTube extends Provider {
 
 	/**
 	 * Constructor.
-	 *
-	 * @param Latte $latte Latte instance.
 	 */
-	public function __construct( Latte $latte ) {
+	public function __construct() {
 		$this->api_key = Options::get( 'api_key', 'mlye_general' );
 		$this->timeout = Options::get( 'timeout', 'mlye_general' );
-
-		$this->latte = $latte;
 	}
 
 	/**
@@ -154,7 +142,7 @@ class YouTube extends Provider {
 		$video_id  = $matches[2];
 		$embed_url = $matches[1];
 
-		$player_parameters = parse_url( $embed_url, PHP_URL_QUERY );
+		$player_parameters = wp_parse_url( $embed_url, PHP_URL_QUERY );
 
 		$player_size = explode( 'x', Options::get( 'player_size', 'mlye_general', '16x9' ) );
 
@@ -173,29 +161,24 @@ class YouTube extends Provider {
 		$api = $this->get_data_from_api( $video_id );
 
 		$params = array(
-			'use_microdata'     => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
-			'use_lazy_load'     => ( 'yes' === Options::get( 'use_lazy_load', 'mlye_general' ) ),
-			'preview_quality'   => Options::get( 'preview_quality', 'mlye_general', 'auto' ),
-			'video_id'          => $video_id,
-			'player_width'      => in_array( $player_size[0], array( '16', '4', '9' ), true ) ? 1280 : $player_size[0],
-			'player_height'     => in_array( $player_size[1], array( '9', '3', '16' ), true ) ? 720 : $player_size[1],
-			'player_class'      => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
-			'player_parameters' => $player_parameters,
-			'upload_date'       => $api['upload_date'],
-			'duration'          => $api['duration'],
-			'url'               => $url,
-			'description'       => mb_substr( $api['description'], 0, 250, 'UTF-8' ) . '...',
-			'name'              => $api['name'],
-			'embed_url'         => $embed_url,
-			'preview_url'       => $this->get_preview_url( $video_id ),
+			'use_microdata'   => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
+			'use_lazy_load'   => ( 'yes' === Options::get( 'use_lazy_load', 'mlye_general' ) ),
+			'preview_quality' => Options::get( 'preview_quality', 'mlye_general', 'auto' ),
+			'video_id'        => $video_id,
+			'player_width'    => in_array( $player_size[0], array( '16', '4', '9' ), true ) ? 1280 : $player_size[0],
+			'player_height'   => in_array( $player_size[1], array( '9', '3', '16' ), true ) ? 720 : $player_size[1],
+			'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
+			'player_src'      => sprintf( 'https://www.youtube-nocookie.com/embed/%s?autoplay=1&%s', $video_id, $player_parameters ),
+			'upload_date'     => $api['upload_date'],
+			'duration'        => $api['duration'],
+			'url'             => $url,
+			'description'     => mb_substr( $api['description'], 0, 250, 'UTF-8' ) . '...',
+			'name'            => $api['name'],
+			'embed_url'       => $embed_url,
+			'preview_url'     => $this->get_preview_url( $video_id ),
 		);
 
-		$render = $this->latte->renderToString(
-			Utils::get_templates_path() . '/template-video.latte',
-			$params
-		);
-
-		return str_replace( array( "\n", "\t", "\r" ), '', $render );
+		return $this->load_template( $params );
 	}
 
 	/**
