@@ -198,7 +198,7 @@ class RuTube extends Provider {
 	 * @throws Exception Exception.
 	 */
 	public function handler_callback( array $matches, array $attr, string $url, array $rawattr ): string {
-		$data = $this->get_data( $matches[1] );print_r($data);die;
+		$data = $this->get_data( $matches[1] );
 
 		if ( ! $data ) {
 			$data = $this->get_fallback_data( $matches[1] );
