@@ -9,10 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install composer requirements
-        run: composer install --no-dev --prefer-dist --no-progress --no-suggest
+      - name: Install dependencies with caching
+        uses: kagg-design/composer-install@v2
+        with:
+          composer-options: "--no-dev --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative"
 
       - name: Setup Node
         uses: actions/setup-node@v1
@@ -25,7 +27,8 @@ jobs:
       - name: Gulp
         run: gulp default
 
-      - name: WordPress plugin deploy
+      - name: WordPress Plugin Deploy
+        id: deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
         with:
           generate-zip: true
