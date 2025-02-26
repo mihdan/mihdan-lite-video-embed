@@ -228,6 +228,24 @@ class Settings {
 
 		$this->wposa->add_section(
 			array(
+				'id'    => 'mlye_vk_video',
+				'title' => __( 'VK Video', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_field(
+			'mlye_vk_video',
+			array(
+				'id'          => 'access_token',
+				'type'        => 'text',
+				'name'        => __( 'Access Token', 'mihdan-lite-youtube-embed' ),
+				'placeholder' => 'vk1.a.i3cFnUkRpoWSlUq3l921Oqc5...',
+				'desc'        => __( 'Plugin uses VK\'s API to fetch information on each video. <br />For your site to use that API, you will get a server key and fill it out here have to <a href="https://console.developers.google.com/apis/library" target="_blank">register</a> your site as a new application, <br />enable the YouTube API for it and get a server key and fill it out here.', 'mihdan-lite-youtube-embed' ),
+			)
+		);
+
+		$this->wposa->add_section(
+			array(
 				'id'    => 'mlye_tools',
 				'title' => __( 'Tools', 'mihdan-lite-youtube-embed' ),
 			)

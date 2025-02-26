@@ -1,9 +1,9 @@
 === Lite Video Embed ===
 Contributors: mihdan
-Tags: youtube, wordpress, seo-friendly, seo, cache, embed
+Tags: youtube, vk, rutube, video
 Requires at least: 5.0
-Tested up to: 6.5
-Stable tag: 1.8.0.3
+Tested up to: 6.6
+Stable tag: 1.8.1
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -20,10 +20,12 @@ Provide videos with a supercharged focus on visual performance. This custom elem
 ### ✅ For now, you can embed ###
 - YouTube video
 - RuTube video
+- Vkontakte
 
 ### ⏳ Coming soon ###
-- Vkontakte
 - Odnoklassniki
+- Дзен
+- Кинескоп
 - Vimeo
 - TikTok
 
@@ -53,6 +55,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.8.1 (20.10.2024) =
+* Added ability to embed VK videos
 
 = 1.8.0 (02.05.2024) =
 * Latte package has been removed

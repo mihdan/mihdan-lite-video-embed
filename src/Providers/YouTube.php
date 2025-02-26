@@ -10,6 +10,7 @@ namespace Mihdan\LiteYouTubeEmbed\Providers;
 use Mihdan\LiteYouTubeEmbed\Provider;
 use Mihdan\LiteYouTubeEmbed\Options;
 use Exception;
+use Mihdan\LiteYouTubeEmbed\Utils;
 
 /**
  * Extend Provider.
@@ -56,13 +57,6 @@ class YouTube extends Provider {
 	protected string $id = 'youtube';
 
 	/**
-	 * Provider iframe template.
-	 *
-	 * @var string
-	 */
-	protected string $template = '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/%s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
-
-	/**
 	 * API key.
 	 *
 	 * @var string|mixed
@@ -80,6 +74,8 @@ class YouTube extends Provider {
 	 * Constructor.
 	 */
 	public function __construct() {
+		parent::__construct();
+
 		$this->api_key = Options::get( 'api_key', 'mlye_general' );
 		$this->timeout = Options::get( 'timeout', 'mlye_general' );
 	}
@@ -330,7 +326,7 @@ class YouTube extends Provider {
 		$result = [
 			'duration' => $duration,
 			'name' => $name,
-			'description' => $this->sanitize_video_description( $description ),
+			'description' => Utils::sanitize_video_description( $description ),
 			'upload_date' => $upload_date,
 		];
 
@@ -347,7 +343,7 @@ class YouTube extends Provider {
 				$result = [
 					'duration' => $content_details->duration,
 					'name' => $snippet->title,
-					'description' => $this->sanitize_video_description( $snippet->description ),
+					'description' => Utils::sanitize_video_description( $snippet->description ),
 					'upload_date' => $snippet->publishedAt,
 				];
 			}

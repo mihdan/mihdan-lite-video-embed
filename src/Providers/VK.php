@@ -1,29 +1,34 @@
 <?php
 /**
- * Class RuTube.
+ * Class VK.
  *
  * @package mihdan-lite-youtube-embed
+ * @link https://dev.vk.com/ru/method/video.get
+ * @link https://vkhost.github.io
  */
 
 namespace Mihdan\LiteYouTubeEmbed\Providers;
 
 use Mihdan\LiteYouTubeEmbed\Options;
 use Mihdan\LiteYouTubeEmbed\Provider;
-use Exception;
 use Mihdan\LiteYouTubeEmbed\Utils;
+use Exception;
+use JsonException;
 
 /**
  * Extend Provider class.
  */
-class RuTube extends Provider {
+class VK extends Provider {
 
 	/**
 	 * Schemas for RuTube.
 	 *
+	 * https://vk.com/video-38661454_456292170
+	 *
 	 * @var array|string[]
 	 */
 	protected array $schemes = [
-		'#https?://(?:www\.)?rutube\.ru/(?:play|video|plst)/([^/]+)/?$#i',
+		'#https?://vk\.com/video\-(?P<oid>[\d]+)_(?P<id>[\d]+)$#i',
 	];
 
 	/**
@@ -31,21 +36,30 @@ class RuTube extends Provider {
 	 *
 	 * @var string
 	 */
-	protected string $id = 'rutube';
+	protected string $id = 'vk-video';
 
 	/**
 	 * Provider oembed URL.
 	 *
 	 * @var string
 	 */
-	protected string $oembed_url = 'https://rutube.ru/api/oembed/?url=https://rutube.ru/video/%s/';
+	protected string $oembed_url = 'https://vk.com/video_ext.php?oid=-%d&id=%d&autoplay=1&hash=7a04b96977ca1c88&hd=1';
 
 	/**
 	 * Provider API URL.
 	 *
 	 * @var string
 	 */
-	protected string $api_url = 'https://rutube.ru/api/video/%s';
+	protected string $api_url = 'https://api.vk.com/method/video.get';
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		$this->api_key = Options::get( 'access_token', 'mlye_vk_video' );
+	}
 
 	/**
 	 * Hooks init.
@@ -54,7 +68,6 @@ class RuTube extends Provider {
 	 */
 	public function setup_hooks(): void {
 		add_action( 'init', [ $this, 'register_handler' ] );
-		add_filter( 'mlye/rutube/render', [ $this, 'auto_embed_content' ] );
 	}
 
 	/**
@@ -71,36 +84,48 @@ class RuTube extends Provider {
 	/**
 	 * Get data from API by Video ID.
 	 *
-	 * @param string $video_id Video ID.
+	 * @param   string  $video_id  Video ID.
 	 *
 	 * @return array
+	 * @throws JsonException
 	 */
 	public function get_data( string $video_id ): array {
-
-		$url = sprintf( $this->get_api_url(), $video_id );
-
-		$request = wp_remote_get(
-			$url,
-			$this->get_http_args()
-		);
-
-		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
+		if ( ! $this->get_api_key() ) {
 			return [];
 		}
 
-		$body = json_decode( wp_remote_retrieve_body( $request ), true );
+		$params = [
+			'access_token' => $this->get_api_key(),
+			'videos'       => $video_id,
+			'v'            => '5.81',
+			'count'        => 1
+		];
+
+		$response = wp_remote_get(
+			$this->get_api_url() . '?' . http_build_query( $params )
+		);
+
+		if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
+			return [];
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true, 512, JSON_THROW_ON_ERROR );
+
+		if ( ! isset( $body['response']['items'][0] ) ) {
+			return [];
+		}
+
+		$data = $body['response']['items'][0];
+
+		//var_dump($data);
 
 		return [
-			'duration'      => $body['duration'],
-			'name'          => $body['title'],
-			'description'   => Utils::sanitize_video_description( $body['description'] ),
-			'upload_date'   => $body['created_ts'],
-			'thumbnail_url' => $body['thumbnail_url'] ?? '',
-			'author_name'   => $body['author']['name'] ?? '',
-			'author_url'    => $body['author']['site_url'] ?? '',
-			'type'          => $body['type'] ?? 'video',
-			'html'          => $body['html'],
-			'embed_url'     => $body['embed_url'],
+			'duration'      => Utils::iso8601_duration($data['duration']),
+			'name'          => $data['title'],
+			'description'   => Utils::sanitize_video_description($data['description']),
+			'upload_date'   => date( 'c', $data['date'] ),
+			'thumbnail_url' => $data['photo_1280'],
+			'player_src'    => add_query_arg( 'autoplay', 1, $data['player'] ),
 		];
 	}
 
@@ -112,30 +137,29 @@ class RuTube extends Provider {
 	 * @return array
 	 */
 	public function get_fallback_data( string $video_id ): array {
+		$post = get_post();
 
-		$url = sprintf( $this->get_oembed_url(), $video_id );
+		$upload_date   = get_post_time( 'c', false, $post, false );
+		$thumbnail_url = get_the_post_thumbnail_url( $post );
+		$description   = ( ! empty( $post->post_excerpt ) )
+			? $post->post_excerpt
+			: Options::get( 'description', 'mlye_general' );
 
-		$request = wp_remote_get(
-			$url,
-			$this->get_http_args()
+		[ $oid, $id ] = explode( '_', $video_id );
+
+		$player_src = sprintf(
+			$this->get_oembed_url(),
+			$oid,
+			$id
 		);
 
-		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
-			return [];
-		}
-
-		$body = json_decode( wp_remote_retrieve_body( $request ), true );
-
 		return [
-			'duration'      => '',
-			'name'          => $body['title'],
-			'description'   => '',
-			'upload_date'   => '',
-			'thumbnail_url' => $body['thumbnail_url'] ?? '',
-			'author_name'   => $body['author_name'] ?? '',
-			'author_url'    => $body['author_url'] ?? '',
-			'type'          => $body['type'] ?? 'video',
-			'html'          => $body['html'],
+			'duration'      => 'T00H10M00S',
+			'name'          => $post->post_title,
+			'description'   => Utils::sanitize_video_description( $description ),
+			'upload_date'   => $upload_date,
+			'thumbnail_url' => $thumbnail_url,
+			'player_src'    => $player_src,
 		];
 	}
 
@@ -192,13 +216,18 @@ class RuTube extends Provider {
 	 * @throws Exception Exception.
 	 */
 	public function handler_callback( array $matches, array $attr, string $url, array $rawattr ): string {
-		$data = $this->get_data( $matches[1] );
 
-		if ( ! $data ) {
-			$data = $this->get_fallback_data( $matches[1] );
+		if ( empty( $matches['id'] ) || empty( $matches['oid'] ) ) {
+			return '';
 		}
 
-		$video_id = $matches[1];
+		$data = $this->get_data( '-' . $matches['oid'] . '_' . $matches['id'] );
+		//$data = $this->get_data( '-227260170_456239021' );
+
+		if ( ! $data ) {
+			$data = $this->get_fallback_data( '-' . $matches['oid'] . '_' . $matches['id'] );
+			//$data = $this->get_fallback_data( '-227260170_456239021' );
+		}
 
 		$player_size = explode( 'x', Options::get( 'player_size', 'mlye_general', '16x9' ) );
 
@@ -206,17 +235,17 @@ class RuTube extends Provider {
 			'use_microdata'   => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
 			'use_lazy_load'   => ( 'yes' === Options::get( 'use_lazy_load', 'mlye_general' ) ),
 			'preview_quality' => Options::get( 'preview_quality', 'mlye_general', 'auto' ),
-			'video_id'        => $video_id,
+			'video_id'        => $matches['id'],
 			'player_width'    => in_array( $player_size[0], array( '16', '4', '9' ), true ) ? 1280 : $player_size[0],
 			'player_height'   => in_array( $player_size[1], array( '9', '3', '16' ), true ) ? 720 : $player_size[1],
 			'player_class'    => 'lite-youtube_' . $player_size[0] . 'x' . $player_size[1],
-			'player_src'      => $data['embed_url'],
+			'player_src'      => $data['player_src'],
 			'upload_date'     => $data['upload_date'],
 			'duration'        => $data['duration'],
 			'url'             => $url,
 			'description'     => mb_substr( $data['description'], 0, 250, 'UTF-8' ) . '...',
 			'name'            => $data['name'],
-			'embed_url'       => $data['embed_url'],
+			'embed_url'       => $data['player_src'],
 			'preview_url'     => $data['thumbnail_url'],
 		);
 

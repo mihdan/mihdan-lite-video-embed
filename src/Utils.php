@@ -85,4 +85,51 @@ class Utils {
 	public static function get_plugin_title(): string {
 		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_NAME' );
 	}
+
+	/**
+	 * Конвертирует секунды в формат ISO_8601 для
+	 * отображения в duration.
+	 *
+	 * @param int $seconds Секунды.
+	 *
+	 * @return string
+	 */
+	public static function iso8601_duration( int $seconds ): string {
+		$intervals = [
+			'D' => 60 * 60 * 24,
+			'H' => 60 * 60,
+			'M' => 60,
+			'S' => 1
+		];
+
+		$pt     = 'P';
+		$result = '';
+
+		foreach ( $intervals as $tag => $divisor ) {
+			$qty = floor( $seconds / $divisor );
+			if ( ! $qty && $result === '' ) {
+				$pt = 'T';
+				continue;
+			}
+
+			$seconds -= $qty * $divisor;
+			$result  .= "$qty$tag";
+		}
+		if ( $result === '' ) {
+			$result = '0S';
+		}
+
+		return "$pt$result";
+	}
+
+	/**
+	 * Sanitize video description.
+	 *
+	 * @param string $description Description.
+	 *
+	 * @return string
+	 */
+	public static function sanitize_video_description( string $description ): string {
+		return wp_strip_all_tags( str_replace( PHP_EOL, ' ', $description ) );
+	}
 }
