@@ -10,11 +10,6 @@
     <projectFiles>
         <file name="mihdan-lite-youtube-embed.php"/>
         <directory name="src"/>
-        <ignoreFiles>
-            <directory name="vendor"/>
-            <directory name="node_modules"/>
-            <directory name="templates"/>
-        </ignoreFiles>
     </projectFiles>
 <plugins>
 	<pluginClass class="PsalmWordPress\Plugin"/></plugins>
