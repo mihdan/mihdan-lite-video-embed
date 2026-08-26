@@ -55,6 +55,10 @@ class Settings {
 	 * @return string
 	 */
 	public function admin_body_class( $classes ) {
+		if ( ! isset( $_GET['page'] ) || Utils::get_plugin_slug() !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only page check.
+			return $classes;
+		}
+
 		return $classes . ' plugin-install-php';
 	}
 
