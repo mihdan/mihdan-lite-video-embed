@@ -35,9 +35,9 @@ class CreativeMotionClearfy {
 	 * @param bool   $excluded Исключать ли файл.
 	 * @param string $path     Путь к скрипту.
 	 *
-	 * @return string
+	 * @return bool
 	 */
-	public function filter_js_minify_excluded( bool $excluded, string $path ): string {
+	public function filter_js_minify_excluded( bool $excluded, string $path ): bool {
 		foreach ( self::JS_EXCLUDED as $asset ) {
 			if ( strpos( $path, $asset ) !== false ) {
 				return false;
@@ -50,9 +50,11 @@ class CreativeMotionClearfy {
 	/**
 	 * Исключает скрипты из процесса склейки.
 	 *
-	 * @param string|array $default Скрипты по умолчанию.
+	 * @param string $excluded_scripts Скрипты по умолчанию.
+	 *
+	 * @return string
 	 */
-	public function filter_js_exclude( $default ) {
-		return $default . ', ' . implode( ', ', self::JS_EXCLUDED );
+	public function filter_js_exclude( string $excluded_scripts ): string {
+		return $excluded_scripts . ', ' . implode( ', ', self::JS_EXCLUDED );
 	}
 }

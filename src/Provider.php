@@ -60,13 +60,6 @@ abstract class Provider {
 	protected string $api_key;
 
 	/**
-	 * Provider iframe template.
-	 *
-	 * @var string
-	 */
-	protected string $template;
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -109,15 +102,6 @@ abstract class Provider {
 	}
 
 	/**
-	 * Get iframe template for Provider.
-	 *
-	 * @return string
-	 */
-	protected function get_template__(): string {
-		return $this->template;
-	}
-
-	/**
 	 * Get supported schemes.
 	 *
 	 * @return array
@@ -133,17 +117,6 @@ abstract class Provider {
 	 */
 	protected function get_http_args(): array {
 		return $this->http_args;
-	}
-
-	/**
-	 * Sanitize video description.
-	 *
-	 * @param string $description Description.
-	 *
-	 * @return string
-	 */
-	protected function sanitize_video_description( string $description ): string {
-		return wp_strip_all_tags( str_replace( PHP_EOL, ' ', $description ) );
 	}
 
 	/**
@@ -169,8 +142,8 @@ abstract class Provider {
 			$template = require MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/templates/' . $this->get_id() . '.php';
 
 			$template = str_replace(
-				[ "\n", "\t", "\r", "  " ],
-				[ "", "", "", " " ],
+				[ "\n", "\t", "\r", '  ' ],
+				[ '', '', '', ' ' ],
 				$template
 			);
 

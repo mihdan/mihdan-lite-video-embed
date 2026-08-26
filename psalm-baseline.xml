@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
+  <file src="src/Main.php">
+    <HookNotFound occurrences="1">
+      <code>add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 )</code>
+    </HookNotFound>
+    <InvalidScalarArgument occurrences="2">
+      <code>filemtime( Utils::get_plugin_path() . '/assets/dist/js/admin.js' )</code>
+      <code>filemtime( Utils::get_plugin_path() . '/assets/dist/js/frontend.js' )</code>
+    </InvalidScalarArgument>
+  </file>
+  <file src="src/Provider.php">
+    <UndefinedConstant occurrences="2">
+      <code>MIHDAN_LITE_YOUTUBE_EMBED_DIR</code>
+      <code>MIHDAN_LITE_YOUTUBE_EMBED_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="src/Providers/RuTube.php">
+    <HookNotFound occurrences="1">
+      <code>add_filter( 'mlye/rutube/render', [ $this, 'auto_embed_content' ] )</code>
+    </HookNotFound>
+    <NonInvariantDocblockPropertyType occurrences="1">
+      <code>$schemes</code>
+    </NonInvariantDocblockPropertyType>
+  </file>
+  <file src="src/Providers/VK.php">
+    <NonInvariantDocblockPropertyType occurrences="1">
+      <code>$schemes</code>
+    </NonInvariantDocblockPropertyType>
+    <PossiblyInvalidArgument occurrences="2">
+      <code>$post</code>
+      <code>$post</code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidPropertyFetch occurrences="2">
+      <code>$post-&gt;post_excerpt</code>
+      <code>$post-&gt;post_title</code>
+    </PossiblyInvalidPropertyFetch>
+    <PossiblyNullPropertyFetch occurrences="1">
+      <code>$post-&gt;post_title</code>
+    </PossiblyNullPropertyFetch>
+  </file>
+  <file src="src/Providers/YouTube.php">
+    <HookNotFound occurrences="2">
+      <code>add_filter( 'mlye/youtube/render', [ $this, 'auto_embed_content' ] )</code>
+      <code>add_filter( 'pre_update_option_mlye_general', array( $this, 'maybe_validate_api_key' ), 10, 2 )</code>
+    </HookNotFound>
+    <NonInvariantDocblockPropertyType occurrences="1">
+      <code>$api_key</code>
+    </NonInvariantDocblockPropertyType>
+    <PossiblyInvalidArgument occurrences="2">
+      <code>$player_parameters</code>
+      <code>$post</code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidPropertyFetch occurrences="2">
+      <code>$post-&gt;post_excerpt</code>
+      <code>$post-&gt;post_title</code>
+    </PossiblyInvalidPropertyFetch>
+    <PossiblyNullPropertyFetch occurrences="1">
+      <code>$post-&gt;post_title</code>
+    </PossiblyNullPropertyFetch>
+    <TooManyArguments occurrences="1">
+      <code>wp_parse_url( $embed_url, PHP_URL_QUERY )</code>
+    </TooManyArguments>
+  </file>
+  <file src="src/Settings.php">
+    <MissingFile occurrences="1">
+      <code>require_once ABSPATH . 'wp-admin/includes/class-wp-plugin-install-list-table.php'</code>
+    </MissingFile>
+  </file>
+  <file src="src/ThirdParty/CreativeMotionClearfy.php">
+    <HookNotFound occurrences="2">
+      <code>add_filter( 'wmac_filter_js_exclude', [ $this, 'filter_js_exclude' ] )</code>
+      <code>add_filter( 'wmac_filter_js_minify_excluded', [ $this, 'filter_js_minify_excluded' ], 10, 2 )</code>
+    </HookNotFound>
+  </file>
+  <file src="src/Utils.php">
+    <UndefinedConstant occurrences="1">
+      <code>MIHDAN_LITE_YOUTUBE_EMBED_FILE</code>
+    </UndefinedConstant>
+  </file>
+</files>

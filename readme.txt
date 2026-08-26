@@ -1,9 +1,9 @@
 === Lite Video Embed ===
 Contributors: mihdan
-Tags: youtube, wordpress, seo-friendly, seo, cache, embed
+Tags: youtube, vk, rutube, video
 Requires at least: 5.0
-Tested up to: 6.5
-Stable tag: 1.8.0.3
+Tested up to: 7.1
+Stable tag: 1.9.0
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,17 +13,19 @@ A faster YouTube/RuTube embed.
 
 == Description ==
 
-A faster YouTube/RuTube embed. Renders faster than a sneeze.
+A faster YouTube/RuTube/Vkontakte embed. Renders faster than a sneeze.
 
 Provide videos with a supercharged focus on visual performance. This custom element renders just like the real thing but approximately 224X faster.
 
 ### ✅ For now, you can embed ###
 - YouTube video
 - RuTube video
+- Vkontakte
 
 ### ⏳ Coming soon ###
-- Vkontakte
 - Odnoklassniki
+- Дзен
+- Кинескоп
 - Vimeo
 - TikTok
 
@@ -39,6 +41,9 @@ If the plugin was useful, rate it with a [5 star rating](https://wordpress.org/s
 
 Can you help with plugin translation? Please feel free to contribute!
 
+### 🧪 Quality
+The plugin's code is covered by an automated PHPUnit test suite and checked with PHPCS/Psalm on every change.
+
 == Installation ==
 
 This section describes how to install the plugin and get it working.
@@ -53,6 +58,13 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.9.0 (26.08.2026) =
+* Added ability to embed VK videos
+* Added support for the new vkvideo.ru domain and VK clips
+* Added support for RuTube Shorts, live streams and playlists
+* Fixed invalid video duration in schema.org markup for YouTube, RuTube and VK videos
+* Removed a non-functional placeholder Gutenberg block
 
 = 1.8.0 (02.05.2024) =
 * Latte package has been removed

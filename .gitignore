@@ -2,3 +2,5 @@
 .assets
 node_modules/
 vendor/
+.phpcs.cache
+.phpunit.result.cache

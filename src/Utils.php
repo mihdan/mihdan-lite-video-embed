@@ -55,7 +55,7 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_slug():string {
+	public static function get_plugin_slug(): string {
 		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_SLUG' );
 	}
 
@@ -84,5 +84,39 @@ class Utils {
 	 */
 	public static function get_plugin_title(): string {
 		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_NAME' );
+	}
+
+	/**
+	 * Конвертирует секунды в формат ISO_8601 для
+	 * отображения в duration.
+	 *
+	 * @param int $seconds Секунды.
+	 *
+	 * @return string
+	 */
+	public static function iso8601_duration( int $seconds ): string {
+		$days     = (int) floor( $seconds / 86400 );
+		$seconds -= $days * 86400;
+
+		$hours    = (int) floor( $seconds / 3600 );
+		$seconds -= $hours * 3600;
+
+		$minutes  = (int) floor( $seconds / 60 );
+		$seconds -= $minutes * 60;
+
+		$date_part = $days ? "{$days}D" : '';
+
+		return "P{$date_part}T{$hours}H{$minutes}M{$seconds}S";
+	}
+
+	/**
+	 * Sanitize video description.
+	 *
+	 * @param string $description Description.
+	 *
+	 * @return string
+	 */
+	public static function sanitize_video_description( string $description ): string {
+		return wp_strip_all_tags( str_replace( PHP_EOL, ' ', $description ) );
 	}
 }

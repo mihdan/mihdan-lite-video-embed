@@ -5,6 +5,8 @@
 .gitlab-ci.yml
 .travis.yml
 .DS_Store
+.phpcs.cache
+.phpunit.result.cache
 Thumbs.db
 behat.yml
 circle.yml
@@ -23,6 +25,7 @@ phpcs.xml.dist
 README.md
 CHANGELOG.md
 CONTRIBUTING.md
+CLAUDE.md
 wp-cli.local.yml
 yarn.lock*.sql
 *.tar.gz

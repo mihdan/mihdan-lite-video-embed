@@ -1,6 +1,6 @@
 <?php
 /**
- * Шаблон для вывода плеера YouTube.
+ * Шаблон для вывода плеера VK Video.
  *
  * @var bool $use_lazy_load
  * @var bool $use_microdata
@@ -28,9 +28,7 @@ if ( $use_lazy_load ) {
 		<lite-youtube__button class="lite-youtube__button lty-playbtn"></lite-youtube__button>
 		<lite-youtube__preview class="lite-youtube__preview">
 			<img data-src="<?php echo esc_attr( $preview_url ); ?>"
-				data-srcset="https://i.ytimg.com/vi/<?php echo esc_attr( $video_id ); ?>/mqdefault.jpg 640w, https://i.ytimg.com/vi/<?php echo esc_attr( $video_id ); ?>/hqdefault.jpg 920w, https://i.ytimg.com/vi/<?php echo esc_attr( $video_id ); ?>/maxresdefault.jpg 1280w"
 				data-placeholder-background="#000"
-				sizes="(max-width: 640px) 100vw, 640px"
 				width='<?php echo esc_attr( $player_width ); ?>'
 				class="lite-youtube__image lite-youtube_lazy mihdan-lozad"
 				height='<?php echo esc_attr( $player_height ); ?>'

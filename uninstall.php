@@ -7,6 +7,10 @@
 
 namespace Mihdan\LiteYouTubeEmbed;
 
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+	exit;
+}
+
 /**
  * Class Uninstall.
  *
@@ -34,6 +38,7 @@ class Uninstall {
 		global $wpdb;
 
 		$sql = "DELETE FROM {$wpdb->postmeta} WHERE LEFT(meta_key, 8) = '_oembed_'";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $sql );
 	}
 
@@ -46,6 +51,7 @@ class Uninstall {
 		global $wpdb;
 
 		$sql = "DELETE FROM {$wpdb->options} WHERE LEFT(option_name, 5) = 'mlye_'";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $sql );
 	}
 }

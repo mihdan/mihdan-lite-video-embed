@@ -10,6 +10,7 @@ namespace Mihdan\LiteYouTubeEmbed\Providers;
 use Mihdan\LiteYouTubeEmbed\Provider;
 use Mihdan\LiteYouTubeEmbed\Options;
 use Exception;
+use Mihdan\LiteYouTubeEmbed\Utils;
 
 /**
  * Extend Provider.
@@ -56,13 +57,6 @@ class YouTube extends Provider {
 	protected string $id = 'youtube';
 
 	/**
-	 * Provider iframe template.
-	 *
-	 * @var string
-	 */
-	protected string $template = '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/%s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
-
-	/**
 	 * API key.
 	 *
 	 * @var string|mixed
@@ -80,6 +74,8 @@ class YouTube extends Provider {
 	 * Constructor.
 	 */
 	public function __construct() {
+		parent::__construct();
+
 		$this->api_key = Options::get( 'api_key', 'mlye_general' );
 		$this->timeout = Options::get( 'timeout', 'mlye_general' );
 	}
@@ -123,20 +119,20 @@ class YouTube extends Provider {
 	 * @link https://wp-kama.ru/hook/oembed_dataparse
 	 * @link https://developers.google.com/search/docs/data-types/video
 	 *
-	 * @param string $return The returned oEmbed HTML.
-	 * @param object $data   A data object result from an oEmbed provider.
-	 * @param string $url    The URL of the content to be embedded.
+	 * @param string $html The returned oEmbed HTML.
+	 * @param object $data A data object result from an oEmbed provider.
+	 * @param string $url  The URL of the content to be embedded.
 	 *
 	 * @return string
 	 */
-	public function oembed_html( $return, $data, $url ) {
+	public function oembed_html( $html, $data, $url ) {
 		if ( 'YouTube' !== $data->provider_name ) {
-			return $return;
+			return $html;
 		}
 		preg_match( '#src="(.*?embed\/([^\?]+).*?)"#', $data->html, $matches );
 
 		if ( ! $matches ) {
-			return $return;
+			return $html;
 		}
 
 		$video_id  = $matches[2];
@@ -202,7 +198,7 @@ class YouTube extends Provider {
 	/**
 	 * Get HTTP timeout.
 	 *
-	 * @return string
+	 * @return int
 	 */
 	public function get_timeout() {
 		return $this->timeout;
@@ -314,12 +310,19 @@ class YouTube extends Provider {
 		);
 	}
 
+	/**
+	 * Get video data via the YouTube Data API, or fall back to post data.
+	 *
+	 * @param string $video_id Video ID.
+	 *
+	 * @return array
+	 */
 	private function get_data_from_api( $video_id ) {
 		$api_key = $this->get_api_key();
 
 		// Default data.
 		$post        = get_post();
-		$duration    = 'T00H10M00S';
+		$duration    = 'PT00H10M00S';
 		$upload_date = get_post_time( 'c', false, $post, false );
 		$name        = $post->post_title;
 
@@ -328,9 +331,9 @@ class YouTube extends Provider {
 			: Options::get( 'description', 'mlye_general' );
 
 		$result = [
-			'duration' => $duration,
-			'name' => $name,
-			'description' => $this->sanitize_video_description( $description ),
+			'duration'    => $duration,
+			'name'        => $name,
+			'description' => Utils::sanitize_video_description( $description ),
 			'upload_date' => $upload_date,
 		];
 
@@ -345,10 +348,10 @@ class YouTube extends Provider {
 				$snippet         = $body->items[0]->snippet;
 
 				$result = [
-					'duration' => $content_details->duration,
-					'name' => $snippet->title,
-					'description' => $this->sanitize_video_description( $snippet->description ),
-					'upload_date' => $snippet->publishedAt,
+					'duration'    => $content_details->duration,
+					'name'        => $snippet->title,
+					'description' => Utils::sanitize_video_description( $snippet->description ),
+					'upload_date' => $snippet->publishedAt, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- external API field name.
 				];
 			}
 		} else {
@@ -369,12 +372,26 @@ class YouTube extends Provider {
 		return $result;
 	}
 
+	/**
+	 * Placeholder for removing the default WordPress core oEmbed provider.
+	 *
+	 * @return void
+	 */
 	public function remove_provider() {
-		//wp_oembed_remove_provider()
 	}
 
+	/**
+	 * Get data from API by Video ID.
+	 *
+	 * YouTube renders via the `oembed_dataparse` filter (see `oembed_html()`), not a custom
+	 * `wp_embed_register_handler` callback, so this method is unused but required by `Provider`.
+	 *
+	 * @param string $video_id Video ID.
+	 *
+	 * @return array
+	 */
 	public function get_data( string $video_id ): array {
-		// TODO: Implement get_data() method.
+		return [];
 	}
 
 	/**
