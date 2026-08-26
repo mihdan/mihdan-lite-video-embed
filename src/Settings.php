@@ -22,6 +22,11 @@ class Settings {
 	 */
 	private $wposa;
 
+	/**
+	 * Settings constructor.
+	 *
+	 * @param Options $wposa WP_OSA instance.
+	 */
 	public function __construct( Options $wposa ) {
 		$this->wposa = $wposa;
 
@@ -29,18 +34,35 @@ class Settings {
 		$this->setup_fields();
 	}
 
+	/**
+	 * Init hooks.
+	 *
+	 * @return void
+	 */
 	public function setup_hooks() {
 		add_filter( 'install_plugins_nonmenu_tabs', array( $this, 'install_plugins_nonmenu_tabs' ) );
 		add_filter( 'install_plugins_table_api_args_' . Utils::get_plugin_slug(), array( $this, 'install_plugins_table_api_args' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
+	/**
+	 * Enqueue admin scripts required by the "Plugins" settings tab.
+	 *
+	 * @return void
+	 */
 	public function admin_enqueue_scripts() {
 		wp_enqueue_script( 'plugin_install' );
 		wp_enqueue_script( 'updates' );
 		add_thickbox();
 	}
 
+	/**
+	 * Add plugin's own tab to the "Add Plugins" screen.
+	 *
+	 * @param array $tabs Existing tabs.
+	 *
+	 * @return array
+	 */
 	public function install_plugins_nonmenu_tabs( $tabs ) {
 
 		$tabs[] = Utils::get_plugin_slug();
@@ -48,7 +70,14 @@ class Settings {
 		return $tabs;
 	}
 
-	public function install_plugins_table_api_args( $args ) {
+	/**
+	 * Build API args for the plugin's "Add Plugins" tab.
+	 *
+	 * @param array $args Default args.
+	 *
+	 * @return array
+	 */
+	public function install_plugins_table_api_args( $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- required by the install_plugins_table_api_args_{slug} filter signature.
 		global $paged;
 
 		return array(
@@ -59,6 +88,11 @@ class Settings {
 		);
 	}
 
+	/**
+	 * Register settings sections and fields.
+	 *
+	 * @return void
+	 */
 	public function setup_fields() {
 
 		$this->wposa->add_section(
@@ -118,10 +152,10 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_general',
 			array(
-				'id'          => 'description',
-				'type'        => 'textarea',
-				'name'        => __( 'Description', 'mihdan-lite-youtube-embed' ),
-				'desc'        => __( 'Default video description for microdata', 'mihdan-lite-youtube-embed' ),
+				'id'   => 'description',
+				'type' => 'textarea',
+				'name' => __( 'Description', 'mihdan-lite-youtube-embed' ),
+				'desc' => __( 'Default video description for microdata', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
@@ -254,10 +288,10 @@ class Settings {
 		$this->wposa->add_field(
 			'mlye_tools',
 			array(
-				'id'          => 'clear_cache',
-				'type'        => 'checkbox',
-				'name'        => __( 'Clear Cache', 'mihdan-lite-youtube-embed' ),
-				'desc'        => __( 'Clear oEmbed cache for all posts.', 'mihdan-lite-youtube-embed' ),
+				'id'   => 'clear_cache',
+				'type' => 'checkbox',
+				'name' => __( 'Clear Cache', 'mihdan-lite-youtube-embed' ),
+				'desc' => __( 'Clear oEmbed cache for all posts.', 'mihdan-lite-youtube-embed' ),
 			)
 		);
 
@@ -325,7 +359,6 @@ class Settings {
 					$_POST['tab'] = Utils::get_plugin_slug();
 					$table = new WP_Plugin_Install_List_Table();
 					$table->prepare_items();
-
 
 					$table->display();
 

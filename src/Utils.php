@@ -55,7 +55,7 @@ class Utils {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_slug():string {
+	public static function get_plugin_slug(): string {
 		return constant( 'MIHDAN_LITE_YOUTUBE_EMBED_SLUG' );
 	}
 
@@ -95,31 +95,18 @@ class Utils {
 	 * @return string
 	 */
 	public static function iso8601_duration( int $seconds ): string {
-		$intervals = [
-			'D' => 60 * 60 * 24,
-			'H' => 60 * 60,
-			'M' => 60,
-			'S' => 1
-		];
+		$days     = (int) floor( $seconds / 86400 );
+		$seconds -= $days * 86400;
 
-		$pt     = 'P';
-		$result = '';
+		$hours    = (int) floor( $seconds / 3600 );
+		$seconds -= $hours * 3600;
 
-		foreach ( $intervals as $tag => $divisor ) {
-			$qty = floor( $seconds / $divisor );
-			if ( ! $qty && $result === '' ) {
-				$pt = 'T';
-				continue;
-			}
+		$minutes  = (int) floor( $seconds / 60 );
+		$seconds -= $minutes * 60;
 
-			$seconds -= $qty * $divisor;
-			$result  .= "$qty$tag";
-		}
-		if ( $result === '' ) {
-			$result = '0S';
-		}
+		$date_part = $days ? "{$days}D" : '';
 
-		return "$pt$result";
+		return "P{$date_part}T{$hours}H{$minutes}M{$seconds}S";
 	}
 
 	/**

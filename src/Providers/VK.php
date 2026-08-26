@@ -21,14 +21,19 @@ use JsonException;
 class VK extends Provider {
 
 	/**
-	 * Schemas for RuTube.
+	 * Schemas for VK.
 	 *
-	 * https://vk.com/video-38661454_456292170
+	 * VK video moved from vk.com to vkvideo.ru, and clips use a "clip-" prefix
+	 * instead of "video-" — both old and new URLs are supported.
+	 *
+	 * @link https://vk.com/video-38661454_456292170
+	 * @link https://vkvideo.ru/video-38661454_456292170
+	 * @link https://vkvideo.ru/clip-38661454_456292170
 	 *
 	 * @var array|string[]
 	 */
 	protected array $schemes = [
-		'#https?://vk\.com/video\-(?P<oid>[\d]+)_(?P<id>[\d]+)$#i',
+		'#https?://(?:vk\.com|vkvideo\.ru)/(?:video|clip)\-(?P<oid>[\d]+)_(?P<id>[\d]+)(?:\?.*)?$#i',
 	];
 
 	/**
@@ -84,10 +89,10 @@ class VK extends Provider {
 	/**
 	 * Get data from API by Video ID.
 	 *
-	 * @param   string  $video_id  Video ID.
+	 * @param   string $video_id  Video ID.
 	 *
 	 * @return array
-	 * @throws JsonException
+	 * @throws JsonException If the API response body is not valid JSON.
 	 */
 	public function get_data( string $video_id ): array {
 		if ( ! $this->get_api_key() ) {
@@ -98,7 +103,7 @@ class VK extends Provider {
 			'access_token' => $this->get_api_key(),
 			'videos'       => $video_id,
 			'v'            => '5.81',
-			'count'        => 1
+			'count'        => 1,
 		];
 
 		$response = wp_remote_get(
@@ -117,13 +122,11 @@ class VK extends Provider {
 
 		$data = $body['response']['items'][0];
 
-		//var_dump($data);
-
 		return [
-			'duration'      => Utils::iso8601_duration($data['duration']),
+			'duration'      => Utils::iso8601_duration( $data['duration'] ),
 			'name'          => $data['title'],
-			'description'   => Utils::sanitize_video_description($data['description']),
-			'upload_date'   => date( 'c', $data['date'] ),
+			'description'   => Utils::sanitize_video_description( $data['description'] ),
+			'upload_date'   => gmdate( 'c', $data['date'] ),
 			'thumbnail_url' => $data['photo_1280'],
 			'player_src'    => add_query_arg( 'autoplay', 1, $data['player'] ),
 		];
@@ -154,7 +157,7 @@ class VK extends Provider {
 		);
 
 		return [
-			'duration'      => 'T00H10M00S',
+			'duration'      => 'PT00H10M00S',
 			'name'          => $post->post_title,
 			'description'   => Utils::sanitize_video_description( $description ),
 			'upload_date'   => $upload_date,
@@ -222,11 +225,9 @@ class VK extends Provider {
 		}
 
 		$data = $this->get_data( '-' . $matches['oid'] . '_' . $matches['id'] );
-		//$data = $this->get_data( '-227260170_456239021' );
 
 		if ( ! $data ) {
 			$data = $this->get_fallback_data( '-' . $matches['oid'] . '_' . $matches['id'] );
-			//$data = $this->get_fallback_data( '-227260170_456239021' );
 		}
 
 		$player_size = explode( 'x', Options::get( 'player_size', 'mlye_general', '16x9' ) );
@@ -251,5 +252,4 @@ class VK extends Provider {
 
 		return $this->load_template( $params );
 	}
-
 }

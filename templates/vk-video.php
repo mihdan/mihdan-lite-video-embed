@@ -28,11 +28,11 @@ if ( $use_lazy_load ) {
 		<lite-youtube__button class="lite-youtube__button lty-playbtn"></lite-youtube__button>
 		<lite-youtube__preview class="lite-youtube__preview">
 			<img data-src="<?php echo esc_attr( $preview_url ); ?>"
-			     data-placeholder-background="#000"
-			     width='<?php echo esc_attr( $player_width ); ?>'
-			     class="lite-youtube__image lite-youtube_lazy mihdan-lozad"
-			     height='<?php echo esc_attr( $player_height ); ?>'
-			     alt="<?php echo esc_attr( $name ); ?>" />
+				data-placeholder-background="#000"
+				width='<?php echo esc_attr( $player_width ); ?>'
+				class="lite-youtube__image lite-youtube_lazy mihdan-lozad"
+				height='<?php echo esc_attr( $player_height ); ?>'
+				alt="<?php echo esc_attr( $name ); ?>" />
 		</lite-youtube__preview>
 		<lite-youtube__name class="lite-youtube__name"><?php echo esc_html( $name ); ?></lite-youtube__name>
 	</lite-youtube>
@@ -43,10 +43,10 @@ if ( $use_lazy_load ) {
 		<lite-youtube__button class="lite-youtube__button lty-playbtn"></lite-youtube__button>
 		<lite-youtube__preview class="lite-youtube__preview">
 			<img src="<?php echo esc_attr( $preview_url ); ?>"
-			     width='<?php echo esc_attr( $player_width ); ?>'
-			     class="lite-youtube__image"
-			     height='<?php echo esc_attr( $player_height ); ?>'
-			     alt="<?php echo esc_attr( $name ); ?>" />
+				width='<?php echo esc_attr( $player_width ); ?>'
+				class="lite-youtube__image"
+				height='<?php echo esc_attr( $player_height ); ?>'
+				alt="<?php echo esc_attr( $name ); ?>" />
 		</lite-youtube__preview>
 		<lite-youtube__name class="lite-youtube__name"><?php echo esc_html( $name ); ?></lite-youtube__name>
 	</lite-youtube>

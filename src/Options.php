@@ -50,14 +50,14 @@ if ( ! class_exists( 'Options' ) ) :
 
 		/**
 		 * Constructor.
-         *
+		 *
 		 * @param Utils $utils Utils instance.
-         *
+		 *
 		 * @since  1.0.0
 		 */
 		public function __construct( Utils $utils ) {
 
-		    $this->utils = $utils;
+			$this->utils = $utils;
 
 			// Enqueue the admin scripts.
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
@@ -404,11 +404,11 @@ if ( ! class_exists( 'Options' ) ) :
 		public function get_field_description( $args ) {
 			if ( ! empty( $args['desc'] ) ) {
 				$desc = sprintf(
-				        '<p class="description">%s</p>',
-                        is_callable( $args['desc'] )
-                            ? call_user_func( $args['desc'] )
-                            : $args['desc']
-                );
+					'<p class="description">%s</p>',
+					is_callable( $args['desc'] )
+							? call_user_func( $args['desc'] )
+							: $args['desc']
+				);
 			} else {
 				$desc = '';
 			}
@@ -803,7 +803,7 @@ if ( ! class_exists( 'Options' ) ) :
 							do_action( 'wsa_form_bottom_' . $form['id'], $form );
 							?>
 							<div style="padding-left: 10px">
-								<?php submit_button(null, 'primary', 'submit_'.$form['id']); ?>
+								<?php submit_button( null, 'primary', 'submit_' . $form['id'] ); ?>
 							</div>
 						</form>
 					</div>
@@ -947,14 +947,14 @@ if ( ! class_exists( 'Options' ) ) :
 				.group .form-table input.color-picker {
 					max-width: 100px;
 				}
-                #mlye_plugins .form-table > tr > th,
-                #mlye_plugins .form-table > tbody > tr > th {
-                    display: none;
-                }
-                #submit_mlye_contacts,
-                #submit_mlye_plugins {
-	                display: none;
-                }
+				#mlye_plugins .form-table > tr > th,
+				#mlye_plugins .form-table > tbody > tr > th {
+					display: none;
+				}
+				#submit_mlye_contacts,
+				#submit_mlye_plugins {
+					display: none;
+				}
 			</style>
 			<?php
 		}

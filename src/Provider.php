@@ -142,8 +142,8 @@ abstract class Provider {
 			$template = require MIHDAN_LITE_YOUTUBE_EMBED_DIR . '/templates/' . $this->get_id() . '.php';
 
 			$template = str_replace(
-				[ "\n", "\t", "\r", "  " ],
-				[ "", "", "", " " ],
+				[ "\n", "\t", "\r", '  ' ],
+				[ '', '', '', ' ' ],
 				$template
 			);
 

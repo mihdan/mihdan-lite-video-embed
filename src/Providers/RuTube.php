@@ -20,11 +20,30 @@ class RuTube extends Provider {
 	/**
 	 * Schemas for RuTube.
 	 *
+	 * Matches plain videos, live streams (an extra "live/" prefix on top of "video"),
+	 * shorts, and playlists ("plst", handled separately — see get_playlist_data()).
+	 *
 	 * @var array|string[]
 	 */
 	protected array $schemes = [
-		'#https?://(?:www\.)?rutube\.ru/(?:play|video|plst)/([^/]+)/?$#i',
+		'#https?://(?:www\.)?rutube\.ru/(?:live/)?(?P<kind>play|video|shorts|plst)/(?P<video_id>[^/]+)/?$#i',
 	];
+
+	/**
+	 * Playlist embed URL template.
+	 *
+	 * RuTube has no oEmbed/metadata API for playlists, so this is built directly.
+	 *
+	 * @var string
+	 */
+	protected string $playlist_embed_url = 'https://rutube.ru/play/embed/plst/%s/';
+
+	/**
+	 * Playlist metadata API URL.
+	 *
+	 * @var string
+	 */
+	protected string $playlist_api_url = 'https://rutube.ru/api/playlist/custom/%s/';
 
 	/**
 	 * Provider ID.
@@ -91,7 +110,7 @@ class RuTube extends Provider {
 		$body = json_decode( wp_remote_retrieve_body( $request ), true );
 
 		return [
-			'duration'      => $body['duration'],
+			'duration'      => Utils::iso8601_duration( (int) $body['duration'] ),
 			'name'          => $body['title'],
 			'description'   => Utils::sanitize_video_description( $body['description'] ),
 			'upload_date'   => $body['created_ts'],
@@ -126,6 +145,8 @@ class RuTube extends Provider {
 
 		$body = json_decode( wp_remote_retrieve_body( $request ), true );
 
+		preg_match( '#src="([^"]+)"#', $body['html'] ?? '', $matches );
+
 		return [
 			'duration'      => '',
 			'name'          => $body['title'],
@@ -136,6 +157,42 @@ class RuTube extends Provider {
 			'author_url'    => $body['author_url'] ?? '',
 			'type'          => $body['type'] ?? 'video',
 			'html'          => $body['html'],
+			'embed_url'     => $matches[1] ?? '',
+		];
+	}
+
+	/**
+	 * Get playlist data by playlist ID.
+	 *
+	 * RuTube has no oEmbed/video API for playlists, so metadata comes from the
+	 * playlist API and the player URL is built directly.
+	 *
+	 * @param string $playlist_id Playlist ID.
+	 *
+	 * @return array
+	 */
+	public function get_playlist_data( string $playlist_id ): array {
+
+		$url = sprintf( $this->playlist_api_url, $playlist_id );
+
+		$request = wp_remote_get(
+			$url,
+			$this->get_http_args()
+		);
+
+		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
+			return [];
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $request ), true );
+
+		return [
+			'duration'      => '',
+			'name'          => $body['title'] ?? '',
+			'description'   => Utils::sanitize_video_description( $body['description'] ?? '' ),
+			'upload_date'   => $body['last_modified_ts'] ?? '',
+			'thumbnail_url' => $body['thumbnail_url'] ?? '',
+			'embed_url'     => sprintf( $this->playlist_embed_url, $playlist_id ),
 		];
 	}
 
@@ -192,13 +249,21 @@ class RuTube extends Provider {
 	 * @throws Exception Exception.
 	 */
 	public function handler_callback( array $matches, array $attr, string $url, array $rawattr ): string {
-		$data = $this->get_data( $matches[1] );
+		$video_id = $matches['video_id'];
 
-		if ( ! $data ) {
-			$data = $this->get_fallback_data( $matches[1] );
+		if ( 'plst' === $matches['kind'] ) {
+			$data = $this->get_playlist_data( $video_id );
+		} else {
+			$data = $this->get_data( $video_id );
+
+			if ( ! $data ) {
+				$data = $this->get_fallback_data( $video_id );
+			}
 		}
 
-		$video_id = $matches[1];
+		if ( ! $data ) {
+			return '';
+		}
 
 		$player_size = explode( 'x', Options::get( 'player_size', 'mlye_general', '16x9' ) );
 
@@ -222,5 +287,4 @@ class RuTube extends Provider {
 
 		return $this->load_template( $params );
 	}
-
 }

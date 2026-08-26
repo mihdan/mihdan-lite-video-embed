@@ -10,7 +10,6 @@ namespace Mihdan\LiteYouTubeEmbed;
 use Elementor\Widgets_Manager;
 use Elementor\Plugin;
 
-use Mihdan\LiteYouTubeEmbed\Blocks\Block;
 use Mihdan\LiteYouTubeEmbed\Providers\RuTube;
 use Mihdan\LiteYouTubeEmbed\Providers\VK;
 use Mihdan\LiteYouTubeEmbed\Providers\YouTube;
@@ -64,7 +63,6 @@ class Main {
 		( new YouTube() )->setup_hooks();
 		( new RuTube() )->setup_hooks();
 		( new VK() )->setup_hooks();
-		( new Block() )->setup_hooks();
 
 		// Webcraftic Clearfy.
 		( new CreativeMotionClearfy() )->setup_hooks();
@@ -76,7 +74,6 @@ class Main {
 	public function setup_hooks(): void {
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
-		add_action( '', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
 		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
@@ -89,18 +86,12 @@ class Main {
 	 * Enqueue Gutenberg assets.
 	 */
 	public function enqueue_gutenberg_assets() {
-//		wp_enqueue_style(
-//			Utils::get_plugin_slug(),
-//			Utils::get_plugin_url() . '/assets/dist/css/admin.css',
-//			array( 'wp-edit-blocks' ),
-//			filemtime( Utils::get_plugin_path() . '/assets/dist/css/admin.css' )
-//		);
-
 		wp_enqueue_script(
 			Utils::get_plugin_slug(),
 			Utils::get_plugin_url() . '/assets/dist/js/admin.js',
 			array( 'wp-blocks' ),
-			filemtime( Utils::get_plugin_path() . '/assets/dist/js/admin.js' )
+			filemtime( Utils::get_plugin_path() . '/assets/dist/js/admin.js' ),
+			false
 		);
 	}
 
@@ -181,7 +172,7 @@ class Main {
 	 * @return array
 	 * @throws Exception Exception.
 	 */
-	public function maybe_clear_cache( array $value, array $old_value ): array {
+	public function maybe_clear_cache( array $value, array $old_value ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- required by the pre_update_option_{option} filter signature.
 		if ( isset( $value['clear_cache'] ) && 'on' === $value['clear_cache'] ) {
 			$value['clear_cache'] = 'off';
 
@@ -212,6 +203,7 @@ class Main {
 	 */
 	public function clear_oembed_cache() {
 		$sql = "DELETE FROM {$this->wpdb->postmeta} WHERE LEFT(meta_key, 8) = '_oembed_'";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$this->wpdb->query( $sql );
 	}
 }

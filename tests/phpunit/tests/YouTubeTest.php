@@ -14,6 +14,9 @@ use tad\FunctionMocker\FunctionMocker;
  * Класс для тестирования утилит.
  */
 final class YouTubeTest extends TestCase {
+	/**
+	 * Sample placeholder test.
+	 */
 	public function test_sample() {
 		$this->assertTrue( true );
 	}

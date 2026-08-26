@@ -35,6 +35,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', PLUGIN_PATH . '/../../../' );
 }
 
+if ( ! defined( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR' ) ) {
+	/**
+	 * Plugin dir, used by Provider::load_template() to locate templates.
+	 */
+	define( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR', PLUGIN_PATH );
+}
+
 FunctionMocker::init(
 	[
 		'blacklist'             => [
