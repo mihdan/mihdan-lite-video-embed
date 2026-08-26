@@ -43,6 +43,19 @@ class Settings {
 		add_filter( 'install_plugins_nonmenu_tabs', array( $this, 'install_plugins_nonmenu_tabs' ) );
 		add_filter( 'install_plugins_table_api_args_' . Utils::get_plugin_slug(), array( $this, 'install_plugins_table_api_args' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
+	}
+
+	/**
+	 * Add the plugin-install grid layout class so the plugin cards on the "Plugins" settings tab
+	 * lay out in the same grid as the core "Add Plugins" screen, which its CSS scopes to that class.
+	 *
+	 * @param string $classes Existing body classes.
+	 *
+	 * @return string
+	 */
+	public function admin_body_class( $classes ) {
+		return $classes . ' plugin-install-php';
 	}
 
 	/**
@@ -356,7 +369,7 @@ class Settings {
 
 					ob_start();
 					require_once ABSPATH . 'wp-admin/includes/class-wp-plugin-install-list-table.php';
-					$_POST['tab'] = Utils::get_plugin_slug();
+					$_REQUEST['tab'] = Utils::get_plugin_slug();
 					$table = new WP_Plugin_Install_List_Table();
 					$table->prepare_items();
 

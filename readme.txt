@@ -3,7 +3,7 @@ Contributors: mihdan
 Tags: youtube, vk, rutube, video
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.9.0
+Stable tag: 1.9.1
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -58,6 +58,10 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.9.1 (26.08.2026) =
+* Fixed the "Other plugins by the author" tab showing the wrong plugin list
+* Fixed the plugin cards on that tab not laying out in a grid
 
 = 1.9.0 (26.08.2026) =
 * Added ability to embed VK videos
