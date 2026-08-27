@@ -153,8 +153,20 @@ class YouTube extends Provider {
 			);
 		}
 
-		// Get duration from API.
-		$api = $this->get_data_from_api( $video_id );
+		// A playlist embed has no single video ID to look up — use the oEmbed data we already have.
+		if ( 'videoseries' === $video_id ) {
+			$api         = [
+				'duration'    => 'PT00H10M00S',
+				'name'        => $data->title,
+				'description' => Utils::sanitize_video_description( $data->title ),
+				'upload_date' => get_post_time( 'c', false, get_post(), false ),
+			];
+			$preview_url = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
+		} else {
+			// Get duration from API.
+			$api         = $this->get_data_from_api( $video_id );
+			$preview_url = $this->get_preview_url( $video_id );
+		}
 
 		$params = array(
 			'use_microdata'   => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
@@ -171,7 +183,7 @@ class YouTube extends Provider {
 			'description'     => mb_substr( $api['description'], 0, 250, 'UTF-8' ) . '...',
 			'name'            => $api['name'],
 			'embed_url'       => $embed_url,
-			'preview_url'     => $this->get_preview_url( $video_id ),
+			'preview_url'     => $preview_url,
 		);
 
 		return $this->load_template( $params );
@@ -342,17 +354,20 @@ class YouTube extends Provider {
 			$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
 
 			if ( wp_remote_retrieve_response_code( $request ) === 200 ) {
-				$body            = wp_remote_retrieve_body( $request );
-				$body            = json_decode( $body, false );
-				$content_details = $body->items[0]->contentDetails;
-				$snippet         = $body->items[0]->snippet;
+				$body = wp_remote_retrieve_body( $request );
+				$body = json_decode( $body, false );
 
-				$result = [
-					'duration'    => $content_details->duration,
-					'name'        => $snippet->title,
-					'description' => Utils::sanitize_video_description( $snippet->description ),
-					'upload_date' => $snippet->publishedAt, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- external API field name.
-				];
+				if ( ! empty( $body->items[0] ) ) {
+					$content_details = $body->items[0]->contentDetails;
+					$snippet         = $body->items[0]->snippet;
+
+					$result = [
+						'duration'    => $content_details->duration,
+						'name'        => $snippet->title,
+						'description' => Utils::sanitize_video_description( $snippet->description ),
+						'upload_date' => $snippet->publishedAt, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- external API field name.
+					];
+				}
 			}
 		} else {
 			$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
