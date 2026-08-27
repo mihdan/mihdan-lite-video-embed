@@ -47,7 +47,9 @@
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$api_key</code>
     </NonInvariantDocblockPropertyType>
-    <PossiblyInvalidArgument occurrences="2">
+    <PossiblyInvalidArgument occurrences="4">
+      <code>$player_parameters</code>
+      <code>$post</code>
       <code>$player_parameters</code>
       <code>$post</code>
     </PossiblyInvalidArgument>

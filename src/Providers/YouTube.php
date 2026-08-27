@@ -45,6 +45,11 @@ class YouTube extends Provider {
 	const SIMPLE_CONTENT_URL = 'https://www.youtube.com/oembed?url=youtube.com/watch?v=%s';
 
 	/**
+	 * Public playlist feed URL — no API key required.
+	 */
+	const PLAYLIST_FEED_URL = 'https://www.youtube.com/feeds/videos.xml?playlist_id=%s';
+
+	/**
 	 * YouTube preview URL template.
 	 */
 	const PREVIEW_URL = 'https://i.ytimg.com/vi/%s/%s.jpg';
@@ -153,13 +158,20 @@ class YouTube extends Provider {
 			);
 		}
 
-		// A playlist embed has no single video ID to look up — use the oEmbed data we already have.
+		// A playlist embed has no single video ID to look up — use the oEmbed data we already have,
+		// falling back to the title of its first (default) video, fetched from the public playlist feed.
 		if ( 'videoseries' === $video_id ) {
+			preg_match( '/(?:^|&)list=([^&]+)/', $player_parameters, $list_matches );
+			$playlist_id = $list_matches[1] ?? '';
+			$video_name  = $playlist_id ? $this->get_playlist_first_video_title( $playlist_id ) : '';
+			$video_name  = $video_name ? $video_name : $data->title;
+
+			$post           = get_post();
 			$api            = [
 				'duration'    => 'PT00H10M00S',
-				'name'        => $data->title,
-				'description' => Utils::sanitize_video_description( $data->title ),
-				'upload_date' => get_post_time( 'c', false, get_post(), false ),
+				'name'        => $video_name,
+				'description' => Utils::sanitize_video_description( $video_name ),
+				'upload_date' => get_post_time( 'c', false, $post, false ),
 			];
 			$preview_url    = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
 			$preview_srcset = $preview_url ? esc_url( $preview_url ) . ' 1280w' : '';
@@ -391,6 +403,35 @@ class YouTube extends Provider {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get the title of a playlist's first (default) video from YouTube's public playlist feed.
+	 *
+	 * No API key required — this is a public Atom feed, unlike the Data API used elsewhere.
+	 *
+	 * @param string $playlist_id Playlist ID.
+	 *
+	 * @return string Video title, or an empty string if unavailable.
+	 */
+	private function get_playlist_first_video_title( string $playlist_id ): string {
+		$request = sprintf( self::PLAYLIST_FEED_URL, $playlist_id );
+		$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
+
+		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
+			return '';
+		}
+
+		$feed = simplexml_load_string( wp_remote_retrieve_body( $request ) );
+
+		if ( ! $feed ) {
+			return '';
+		}
+
+		$feed->registerXPathNamespace( 'a', 'http://www.w3.org/2005/Atom' );
+		$entry = $feed->xpath( '//a:entry[1]/a:title' );
+
+		return $entry ? trim( (string) $entry[0] ) : '';
 	}
 
 	/**
