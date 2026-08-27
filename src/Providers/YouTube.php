@@ -155,17 +155,22 @@ class YouTube extends Provider {
 
 		// A playlist embed has no single video ID to look up — use the oEmbed data we already have.
 		if ( 'videoseries' === $video_id ) {
-			$api         = [
+			$api            = [
 				'duration'    => 'PT00H10M00S',
 				'name'        => $data->title,
 				'description' => Utils::sanitize_video_description( $data->title ),
 				'upload_date' => get_post_time( 'c', false, get_post(), false ),
 			];
-			$preview_url = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
+			$preview_url    = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
+			$preview_srcset = $preview_url ? esc_url( $preview_url ) . ' 1280w' : '';
 		} else {
 			// Get duration from API.
-			$api         = $this->get_data_from_api( $video_id );
-			$preview_url = $this->get_preview_url( $video_id );
+			$api            = $this->get_data_from_api( $video_id );
+			$preview_url    = $this->get_preview_url( $video_id );
+			$preview_srcset = sprintf(
+				'https://i.ytimg.com/vi/%1$s/mqdefault.jpg 640w, https://i.ytimg.com/vi/%1$s/hqdefault.jpg 920w, https://i.ytimg.com/vi/%1$s/maxresdefault.jpg 1280w',
+				$video_id
+			);
 		}
 
 		$params = array(
@@ -184,6 +189,7 @@ class YouTube extends Provider {
 			'name'            => $api['name'],
 			'embed_url'       => $embed_url,
 			'preview_url'     => $preview_url,
+			'preview_srcset'  => $preview_srcset,
 		);
 
 		return $this->load_template( $params );

@@ -14,6 +14,7 @@
  * @var string $url
  * @var string $embed_url
  * @var string $preview_url
+ * @var string $preview_srcset
  * @var string $player_width
  * @var string $player_height
  *
@@ -28,7 +29,7 @@ if ( $use_lazy_load ) {
 		<lite-youtube__button class="lite-youtube__button lty-playbtn"></lite-youtube__button>
 		<lite-youtube__preview class="lite-youtube__preview">
 			<img data-src="<?php echo esc_attr( $preview_url ); ?>"
-				data-srcset="https://i.ytimg.com/vi/<?php echo esc_attr( $video_id ); ?>/mqdefault.jpg 640w, https://i.ytimg.com/vi/<?php echo esc_attr( $video_id ); ?>/hqdefault.jpg 920w, https://i.ytimg.com/vi/<?php echo esc_attr( $video_id ); ?>/maxresdefault.jpg 1280w"
+				data-srcset="<?php echo esc_attr( $preview_srcset ); ?>"
 				data-placeholder-background="#000"
 				sizes="(max-width: 640px) 100vw, 640px"
 				width='<?php echo esc_attr( $player_width ); ?>'
