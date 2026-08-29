@@ -3,7 +3,7 @@ Contributors: mihdan
 Tags: youtube, vk, rutube, video
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.9.1.1
+Stable tag: 1.9.2
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -58,6 +58,13 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.9.2 (29.08.2026) =
+* Fixed a broken preview when embedding a YouTube playlist link
+* The playlist preview now shows the title of its default video instead of the playlist's own title
+* Fixed a fatal error when the video description is empty and no fallback description is set in plugin settings
+* Fixed the responsive (16:9 etc.) preview image always loading a low-resolution thumbnail on wide containers by making the `sizes` attribute match the actual player width
+* Fixed a "Translation loading was triggered too early" notice on WordPress 6.7+ by deferring plugin setup to the `init` hook
 
 = 1.9.1 (26.08.2026) =
 * Fixed the "Other plugins by the author" tab showing the wrong plugin list
