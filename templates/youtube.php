@@ -31,7 +31,7 @@ if ( $use_lazy_load ) {
 			<img data-src="<?php echo esc_attr( $preview_url ); ?>"
 				data-srcset="<?php echo esc_attr( $preview_srcset ); ?>"
 				data-placeholder-background="#000"
-				sizes="(max-width: 640px) 100vw, 640px"
+				sizes="(max-width: <?php echo esc_attr( $player_width ); ?>px) 100vw, <?php echo esc_attr( $player_width ); ?>px"
 				width='<?php echo esc_attr( $player_width ); ?>'
 				class="lite-youtube__image lite-youtube_lazy mihdan-lozad"
 				height='<?php echo esc_attr( $player_height ); ?>'
