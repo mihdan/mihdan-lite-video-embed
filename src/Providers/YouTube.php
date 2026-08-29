@@ -45,6 +45,11 @@ class YouTube extends Provider {
 	const SIMPLE_CONTENT_URL = 'https://www.youtube.com/oembed?url=youtube.com/watch?v=%s';
 
 	/**
+	 * Public playlist feed URL — no API key required.
+	 */
+	const PLAYLIST_FEED_URL = 'https://www.youtube.com/feeds/videos.xml?playlist_id=%s';
+
+	/**
 	 * YouTube preview URL template.
 	 */
 	const PREVIEW_URL = 'https://i.ytimg.com/vi/%s/%s.jpg';
@@ -153,8 +158,32 @@ class YouTube extends Provider {
 			);
 		}
 
-		// Get duration from API.
-		$api = $this->get_data_from_api( $video_id );
+		// A playlist embed has no single video ID to look up — use the oEmbed data we already have,
+		// falling back to the title of its first (default) video, fetched from the public playlist feed.
+		if ( 'videoseries' === $video_id ) {
+			preg_match( '/(?:^|&)list=([^&]+)/', $player_parameters, $list_matches );
+			$playlist_id = $list_matches[1] ?? '';
+			$video_name  = $playlist_id ? $this->get_playlist_first_video_title( $playlist_id ) : '';
+			$video_name  = $video_name ? $video_name : $data->title;
+
+			$post           = get_post();
+			$api            = [
+				'duration'    => 'PT00H10M00S',
+				'name'        => $video_name,
+				'description' => Utils::sanitize_video_description( $video_name ),
+				'upload_date' => get_post_time( 'c', false, $post, false ),
+			];
+			$preview_url    = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
+			$preview_srcset = $preview_url ? esc_url( $preview_url ) . ' 1280w' : '';
+		} else {
+			// Get duration from API.
+			$api            = $this->get_data_from_api( $video_id );
+			$preview_url    = $this->get_preview_url( $video_id );
+			$preview_srcset = sprintf(
+				'https://i.ytimg.com/vi/%1$s/mqdefault.jpg 640w, https://i.ytimg.com/vi/%1$s/hqdefault.jpg 920w, https://i.ytimg.com/vi/%1$s/maxresdefault.jpg 1280w',
+				$video_id
+			);
+		}
 
 		$params = array(
 			'use_microdata'   => ( 'yes' === Options::get( 'use_microdata', 'mlye_general' ) ),
@@ -171,7 +200,8 @@ class YouTube extends Provider {
 			'description'     => mb_substr( $api['description'], 0, 250, 'UTF-8' ) . '...',
 			'name'            => $api['name'],
 			'embed_url'       => $embed_url,
-			'preview_url'     => $this->get_preview_url( $video_id ),
+			'preview_url'     => $preview_url,
+			'preview_srcset'  => $preview_srcset,
 		);
 
 		return $this->load_template( $params );
@@ -342,17 +372,20 @@ class YouTube extends Provider {
 			$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
 
 			if ( wp_remote_retrieve_response_code( $request ) === 200 ) {
-				$body            = wp_remote_retrieve_body( $request );
-				$body            = json_decode( $body, false );
-				$content_details = $body->items[0]->contentDetails;
-				$snippet         = $body->items[0]->snippet;
+				$body = wp_remote_retrieve_body( $request );
+				$body = json_decode( $body, false );
 
-				$result = [
-					'duration'    => $content_details->duration,
-					'name'        => $snippet->title,
-					'description' => Utils::sanitize_video_description( $snippet->description ),
-					'upload_date' => $snippet->publishedAt, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- external API field name.
-				];
+				if ( ! empty( $body->items[0] ) ) {
+					$content_details = $body->items[0]->contentDetails;
+					$snippet         = $body->items[0]->snippet;
+
+					$result = [
+						'duration'    => $content_details->duration,
+						'name'        => $snippet->title,
+						'description' => Utils::sanitize_video_description( $snippet->description ),
+						'upload_date' => $snippet->publishedAt, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- external API field name.
+					];
+				}
 			}
 		} else {
 			$url     = sprintf( self::SIMPLE_CONTENT_URL, $video_id );
@@ -370,6 +403,35 @@ class YouTube extends Provider {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get the title of a playlist's first (default) video from YouTube's public playlist feed.
+	 *
+	 * No API key required — this is a public Atom feed, unlike the Data API used elsewhere.
+	 *
+	 * @param string $playlist_id Playlist ID.
+	 *
+	 * @return string Video title, or an empty string if unavailable.
+	 */
+	private function get_playlist_first_video_title( string $playlist_id ): string {
+		$request = sprintf( self::PLAYLIST_FEED_URL, $playlist_id );
+		$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
+
+		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
+			return '';
+		}
+
+		$feed = simplexml_load_string( wp_remote_retrieve_body( $request ) );
+
+		if ( ! $feed ) {
+			return '';
+		}
+
+		$feed->registerXPathNamespace( 'a', 'http://www.w3.org/2005/Atom' );
+		$entry = $feed->xpath( '//a:entry[1]/a:title' );
+
+		return $entry ? trim( (string) $entry[0] ) : '';
 	}
 
 	/**

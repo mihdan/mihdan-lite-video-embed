@@ -55,8 +55,32 @@ class Main {
 	 * Main constructor.
 	 */
 	public function __construct() {
-		$this->wpdb     = $GLOBALS['wpdb'];
-		$this->utils    = new Utils();
+		$this->wpdb  = $GLOBALS['wpdb'];
+		$this->utils = new Utils();
+	}
+
+	/**
+	 * Setup hooks.
+	 */
+	public function setup_hooks(): void {
+		// Settings/Providers registration calls __() for our textdomain, which WordPress 6.7+
+		// warns about if it happens before `init` (translations aren't loadable yet).
+		add_action( 'init', array( $this, 'init' ) );
+
+		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
+		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
+		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
+
+		register_activation_hook( Utils::get_plugin_file(), array( $this, 'on_activate' ) );
+		register_deactivation_hook( Utils::get_plugin_file(), array( $this, 'on_deactivate' ) );
+	}
+
+	/**
+	 * Build settings and providers once translations are safe to load.
+	 */
+	public function init(): void {
 		$this->wposa    = new Options( $this->utils );
 		$this->settings = new Settings( $this->wposa );
 
@@ -66,20 +90,6 @@ class Main {
 
 		// Webcraftic Clearfy.
 		( new CreativeMotionClearfy() )->setup_hooks();
-	}
-
-	/**
-	 * Setup hooks.
-	 */
-	public function setup_hooks(): void {
-		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
-		add_action( 'after_setup_theme', array( $this, 'enqueue_tinymce_assets' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
-		add_filter( 'pre_update_option_mlye_tools', array( $this, 'maybe_clear_cache' ), 10, 2 );
-
-		register_activation_hook( Utils::get_plugin_file(), array( $this, 'on_activate' ) );
-		register_deactivation_hook( Utils::get_plugin_file(), array( $this, 'on_deactivate' ) );
 	}
 
 	/**
