@@ -112,11 +112,11 @@ class Utils {
 	/**
 	 * Sanitize video description.
 	 *
-	 * @param string $description Description.
+	 * @param string|null $description Description.
 	 *
 	 * @return string
 	 */
-	public static function sanitize_video_description( string $description ): string {
-		return wp_strip_all_tags( str_replace( PHP_EOL, ' ', $description ) );
+	public static function sanitize_video_description( ?string $description ): string {
+		return wp_strip_all_tags( str_replace( PHP_EOL, ' ', (string) $description ) );
 	}
 }
