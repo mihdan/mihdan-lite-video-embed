@@ -97,6 +97,24 @@ class YouTube extends Provider {
 		add_filter( 'oembed_remote_get_args', array( $this, 'oembed_remote_set_timeout' ), 10, 2 );
 		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 100, 3 );
 		add_filter( 'mlye/youtube/render', [ $this, 'auto_embed_content' ] );
+		add_filter( 'oembed_ttl', array( $this, 'shorten_playlist_ttl' ), 10, 2 );
+	}
+
+	/**
+	 * Playlists change over time (new videos added) — cache them for a shorter time than
+	 * WordPress's default 24h so a playlist embed picks up its latest video sooner.
+	 *
+	 * @param int    $ttl Cache TTL in seconds.
+	 * @param string $url The oEmbed source URL being cached.
+	 *
+	 * @return int
+	 */
+	public function shorten_playlist_ttl( $ttl, $url ) {
+		if ( false === strpos( $url, 'youtube.com' ) || false === strpos( $url, 'list=' ) ) {
+			return $ttl;
+		}
+
+		return HOUR_IN_SECONDS;
 	}
 
 	/**
@@ -162,19 +180,32 @@ class YouTube extends Provider {
 		// falling back to the title of its first (default) video, fetched from the public playlist feed.
 		if ( 'videoseries' === $video_id ) {
 			preg_match( '/(?:^|&)list=([^&]+)/', $player_parameters, $list_matches );
-			$playlist_id = $list_matches[1] ?? '';
-			$video_name  = $playlist_id ? $this->get_playlist_first_video_title( $playlist_id ) : '';
-			$video_name  = $video_name ? $video_name : $data->title;
+			$playlist_id  = $list_matches[1] ?? '';
+			$first_video  = $playlist_id ? $this->get_playlist_first_video( $playlist_id ) : [
+				'title'    => '',
+				'video_id' => '',
+			];
+			$video_name   = $first_video['title'] ? $first_video['title'] : $data->title;
+			$thumbnail_id = $first_video['video_id'];
 
-			$post           = get_post();
-			$api            = [
+			$post = get_post();
+			$api  = [
 				'duration'    => 'PT00H10M00S',
 				'name'        => $video_name,
 				'description' => Utils::sanitize_video_description( $video_name ),
 				'upload_date' => get_post_time( 'c', false, $post, false ),
 			];
-			$preview_url    = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
-			$preview_srcset = $preview_url ? esc_url( $preview_url ) . ' 1280w' : '';
+
+			if ( $thumbnail_id ) {
+				$preview_url    = $this->get_preview_url( $thumbnail_id );
+				$preview_srcset = sprintf(
+					'https://i.ytimg.com/vi/%1$s/mqdefault.jpg 640w, https://i.ytimg.com/vi/%1$s/hqdefault.jpg 920w, https://i.ytimg.com/vi/%1$s/maxresdefault.jpg 1280w',
+					$thumbnail_id
+				);
+			} else {
+				$preview_url    = ! empty( $data->thumbnail_url ) ? $data->thumbnail_url : '';
+				$preview_srcset = $preview_url ? esc_url( $preview_url ) . ' 1280w' : '';
+			}
 		} else {
 			// Get duration from API.
 			$api            = $this->get_data_from_api( $video_id );
@@ -406,32 +437,43 @@ class YouTube extends Provider {
 	}
 
 	/**
-	 * Get the title of a playlist's first (default) video from YouTube's public playlist feed.
+	 * Get the title and video ID of a playlist's first (default) video from YouTube's public playlist feed.
 	 *
 	 * No API key required — this is a public Atom feed, unlike the Data API used elsewhere.
 	 *
 	 * @param string $playlist_id Playlist ID.
 	 *
-	 * @return string Video title, or an empty string if unavailable.
+	 * @return array{title: string, video_id: string} Empty strings if unavailable.
 	 */
-	private function get_playlist_first_video_title( string $playlist_id ): string {
+	private function get_playlist_first_video( string $playlist_id ): array {
+		$empty = [
+			'title'    => '',
+			'video_id' => '',
+		];
+
 		$request = sprintf( self::PLAYLIST_FEED_URL, $playlist_id );
 		$request = wp_remote_get( $request, array( 'timeout' => $this->get_timeout() ) );
 
 		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
-			return '';
+			return $empty;
 		}
 
 		$feed = simplexml_load_string( wp_remote_retrieve_body( $request ) );
 
 		if ( ! $feed ) {
-			return '';
+			return $empty;
 		}
 
 		$feed->registerXPathNamespace( 'a', 'http://www.w3.org/2005/Atom' );
-		$entry = $feed->xpath( '//a:entry[1]/a:title' );
+		$feed->registerXPathNamespace( 'yt', 'http://www.youtube.com/xml/schemas/2015' );
 
-		return $entry ? trim( (string) $entry[0] ) : '';
+		$title    = $feed->xpath( '//a:entry[1]/a:title' );
+		$video_id = $feed->xpath( '//a:entry[1]/yt:videoId' );
+
+		return [
+			'title'    => $title ? trim( (string) $title[0] ) : '',
+			'video_id' => $video_id ? trim( (string) $video_id[0] ) : '',
+		];
 	}
 
 	/**

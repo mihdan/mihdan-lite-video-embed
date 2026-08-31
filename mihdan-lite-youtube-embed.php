@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Lite Video Embed (YouTube, RuTube, VK)
  * Description: A faster YouTube/RuTube/VK embed. Renders faster than a sneeze.
- * Version: 1.9.2
+ * Version: 1.9.3
  * Author: Mikhail Kobzarev
  * Author URI: https://www.kobzarev.com/
  * Plugin URI: https://wordpress.org/plugins/mihdan-lite-youtube-embed/
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MIHDAN_LITE_YOUTUBE_EMBED_VERSION', '1.9.2' );
+define( 'MIHDAN_LITE_YOUTUBE_EMBED_VERSION', '1.9.3' );
 define( 'MIHDAN_LITE_YOUTUBE_EMBED_SLUG', 'mihdan-lite-youtube-embed' );
 define( 'MIHDAN_LITE_YOUTUBE_EMBED_NAME', 'Lite Video Embed' );
 define( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR', __DIR__ );
