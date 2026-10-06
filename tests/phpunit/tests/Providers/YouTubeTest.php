@@ -309,4 +309,70 @@ final class YouTubeTest extends TestCase {
 
 		$this->assertSame( 'https://i.ytimg.com/vi/abcDEFghijk/sddefault.jpg', $url );
 	}
+
+	/**
+	 * Only YouTube playlist URLs get the shortened TTL.
+	 */
+	public function test_shorten_playlist_ttl() {
+		$youtube = $this->make_youtube();
+
+		$this->assertSame( HOUR_IN_SECONDS, $youtube->shorten_playlist_ttl( DAY_IN_SECONDS, 'https://www.youtube.com/playlist?list=PL1' ) );
+		$this->assertSame( DAY_IN_SECONDS, $youtube->shorten_playlist_ttl( DAY_IN_SECONDS, 'https://www.youtube.com/watch?v=abc' ) );
+	}
+
+	/**
+	 * Non-playlist URLs and embeds without a post are passed through untouched.
+	 */
+	public function test_refresh_stale_playlist_skips_non_playlists() {
+		$youtube = $this->make_youtube();
+
+		WP_Mock::userFunction( 'wp_oembed_get' )->never();
+
+		$this->assertSame( 'cached', $youtube->refresh_stale_playlist( 'cached', 'https://www.youtube.com/watch?v=abc', [], 1 ) );
+		$this->assertSame( 'cached', $youtube->refresh_stale_playlist( 'cached', 'https://www.youtube.com/playlist?list=PL1', [], null ) );
+	}
+
+	/**
+	 * A playlist cached less than an hour ago is served from cache.
+	 */
+	public function test_refresh_stale_playlist_keeps_fresh_cache() {
+		$youtube = $this->make_youtube();
+
+		WP_Mock::userFunction( 'get_post_meta' )->andReturn( time() - 60 );
+		WP_Mock::userFunction( 'wp_oembed_get' )->never();
+
+		$this->assertSame( 'cached', $youtube->refresh_stale_playlist( 'cached', 'https://www.youtube.com/playlist?list=PL1', [], 1 ) );
+	}
+
+	/**
+	 * A playlist cached more than an hour ago is re-fetched and the post meta cache updated.
+	 */
+	public function test_refresh_stale_playlist_refetches_stale_cache() {
+		$youtube = $this->make_youtube();
+		$url     = 'https://www.youtube.com/playlist?list=PL1';
+		$attr    = [ 'width' => 640 ];
+		$suffix  = md5( $url . serialize( $attr ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+
+		WP_Mock::userFunction( 'get_post_meta' )
+			->with( 1, '_oembed_time_' . $suffix, true )
+			->andReturn( time() - 2 * HOUR_IN_SECONDS );
+		WP_Mock::userFunction( 'update_post_meta' )->once()->with( 1, '_oembed_time_' . $suffix, \Mockery::type( 'int' ) );
+		WP_Mock::userFunction( 'wp_oembed_get' )->once()->with( $url, $attr )->andReturn( 'fresh' );
+		WP_Mock::userFunction( 'update_post_meta' )->once()->with( 1, '_oembed_' . $suffix, 'fresh' );
+
+		$this->assertSame( 'fresh', $youtube->refresh_stale_playlist( 'cached', $url, $attr, 1 ) );
+	}
+
+	/**
+	 * If re-fetching fails, the old cache is kept.
+	 */
+	public function test_refresh_stale_playlist_keeps_cache_on_failure() {
+		$youtube = $this->make_youtube();
+
+		WP_Mock::userFunction( 'get_post_meta' )->andReturn( '' );
+		WP_Mock::userFunction( 'update_post_meta' )->once();
+		WP_Mock::userFunction( 'wp_oembed_get' )->once()->andReturn( false );
+
+		$this->assertSame( 'cached', $youtube->refresh_stale_playlist( 'cached', 'https://www.youtube.com/playlist?list=PL1', [], 1 ) );
+	}
 }

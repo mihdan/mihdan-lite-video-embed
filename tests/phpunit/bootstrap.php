@@ -42,6 +42,17 @@ if ( ! defined( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR' ) ) {
 	define( 'MIHDAN_LITE_YOUTUBE_EMBED_DIR', PLUGIN_PATH );
 }
 
+$time_constants = [
+	'HOUR_IN_SECONDS' => 3600,
+	'DAY_IN_SECONDS'  => 86400,
+];
+
+foreach ( $time_constants as $name => $value ) {
+	if ( ! defined( $name ) ) {
+		define( $name, $value );
+	}
+}
+
 FunctionMocker::init(
 	[
 		'blacklist'             => [
