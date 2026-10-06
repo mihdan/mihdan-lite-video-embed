@@ -98,11 +98,26 @@ class YouTube extends Provider {
 		add_filter( 'oembed_dataparse', array( $this, 'oembed_html' ), 100, 3 );
 		add_filter( 'mlye/youtube/render', [ $this, 'auto_embed_content' ] );
 		add_filter( 'oembed_ttl', array( $this, 'shorten_playlist_ttl' ), 10, 2 );
+		add_filter( 'embed_oembed_html', array( $this, 'refresh_stale_playlist' ), 1, 4 );
+	}
+
+	/**
+	 * Is the URL a YouTube playlist?
+	 *
+	 * @param string $url URL.
+	 *
+	 * @return bool
+	 */
+	private function is_playlist_url( string $url ): bool {
+		return false !== strpos( $url, 'youtube.com' ) && false !== strpos( $url, 'list=' );
 	}
 
 	/**
 	 * Playlists change over time (new videos added) — cache them for a shorter time than
 	 * WordPress's default 24h so a playlist embed picks up its latest video sooner.
+	 *
+	 * Core only honours this TTL when it rebuilds the cache itself (`usecache = false`),
+	 * on the frontend see `refresh_stale_playlist()`.
 	 *
 	 * @param int    $ttl Cache TTL in seconds.
 	 * @param string $url The oEmbed source URL being cached.
@@ -110,11 +125,50 @@ class YouTube extends Provider {
 	 * @return int
 	 */
 	public function shorten_playlist_ttl( $ttl, $url ) {
-		if ( false === strpos( $url, 'youtube.com' ) || false === strpos( $url, 'list=' ) ) {
+		if ( ! $this->is_playlist_url( (string) $url ) ) {
 			return $ttl;
 		}
 
 		return HOUR_IN_SECONDS;
+	}
+
+	/**
+	 * On the frontend `WP_Embed::$usecache` is true, so core serves the post meta cache
+	 * regardless of `oembed_ttl`. Re-fetch a playlist embed ourselves once it's older than an hour.
+	 *
+	 * @param string|false $html    Cached oEmbed HTML.
+	 * @param string       $url     The embed URL.
+	 * @param array        $attr    Shortcode attributes (already merged with `wp_embed_defaults()`).
+	 * @param int|null     $post_id Post ID.
+	 *
+	 * @return string|false
+	 */
+	public function refresh_stale_playlist( $html, $url, $attr, $post_id ) {
+		if ( ! $post_id || ! $this->is_playlist_url( (string) $url ) ) {
+			return $html;
+		}
+
+		// Same key as WP_Embed::shortcode().
+		$key_suffix    = md5( $url . serialize( $attr ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		$cachekey_time = '_oembed_time_' . $key_suffix;
+		$cache_time    = (int) get_post_meta( $post_id, $cachekey_time, true );
+
+		if ( ( time() - $cache_time ) < HOUR_IN_SECONDS ) {
+			return $html;
+		}
+
+		// Bump the timestamp first, so a failed fetch isn't retried on every page view.
+		update_post_meta( $post_id, $cachekey_time, time() );
+
+		$fresh = wp_oembed_get( $url, $attr );
+
+		if ( ! $fresh ) {
+			return $html;
+		}
+
+		update_post_meta( $post_id, '_oembed_' . $key_suffix, $fresh );
+
+		return $fresh;
 	}
 
 	/**

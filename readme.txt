@@ -3,7 +3,7 @@ Contributors: mihdan
 Tags: youtube, vk, rutube, video
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.9.3
+Stable tag: 1.9.4
 Requires PHP: 7.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -58,6 +58,9 @@ e.g.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.9.4 (06.10.2026) =
+* Fixed YouTube playlist embeds never refreshing on the frontend: WordPress ignored the 1-hour cache TTL there, so playlists are now re-fetched once their cache is older than an hour
 
 = 1.9.3 (31.08.2026) =
 * Fixed a low-resolution thumbnail (hqdefault) on YouTube playlist embeds by resolving the playlist's first video and applying the same auto-quality preview lookup used for single videos
